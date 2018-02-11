@@ -1,0 +1,211 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+
+<link rel="import" href="../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+
+<link rel="import" href="my-icons.html">
+
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-meta/iron-meta.html">
+
+<link rel="lazy-import" href="app-view.html">
+<link rel="lazy-import" href="app-login.html">
+<link rel="lazy-import" href="app-view404.html">
+
+<dom-module id="app-shell">
+  <template>
+    <style>
+      :host {
+        --app-primary-color: #4285f4;
+        --app-secondary-color: black;
+
+        height: 100%;
+        display: block;
+      }
+
+      app-drawer-layout:not([narrow]) [drawer-toggle] {
+        display: none;
+      }
+
+      app-header {
+        color: #fff;
+        background-color: var(--app-primary-color);
+      }
+
+      app-header paper-icon-button {
+        --paper-icon-button-ink-color: white;
+      }
+
+      .drawer-list {
+        margin: 0 20px;
+      }
+
+      .drawer-list a {
+        display: block;
+        padding: 0 16px;
+        text-decoration: none;
+        color: var(--app-secondary-color);
+        line-height: 40px;
+      }
+
+      .drawer-list a.iron-selected {
+        color: black;
+        font-weight: bold;
+      }
+      iron-pages {
+        height: 100%;
+      }
+    </style>
+        
+    <iron-ajax auto url="appconfig.json" handle-as="json" last-response="{{appconfig}}"></iron-ajax>
+    <iron-meta id="appconfig" key="config" value$="{{appconfig}}"></iron-meta>
+        
+    <app-location
+        route="{{route}}"
+        url-space-regex="^[[rootPath]]">
+    </app-location>
+
+    <app-route
+        route="{{route}}"
+        pattern="[[rootPath]]:page"
+        data="{{routeData}}"
+        tail="{{subroute}}">
+    </app-route>
+
+    <app-drawer-layout fullbleed narrow="{{narrow}}">
+      <!-- Drawer content -->
+      <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
+        <app-toolbar>Valinnat</app-toolbar>
+        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+          <a name="login" href="[[rootPath]]login">Kirjaudu</a>
+          <a name="view" href="[[rootPath]]view">Varaukset</a>
+        </iron-selector>
+      </app-drawer>
+
+      <!-- Main content -->
+      <app-header-layout has-scrolling-region>
+
+        <app-header slot="header">
+          <app-toolbar>
+            <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
+            <div main-title>Akatemia</div>
+            <div>[[user.name]]</div>
+          </app-toolbar>
+        </app-header>
+
+        <iron-pages
+            selected="[[page]]"
+            attr-for-selected="name"
+            fallback-selection="view404"
+            role="main">
+          <app-login name="login" user="{{user}}"></app-login>
+          <app-view name="view" appconfig=[[appconfig]] user="[[user]]"></app-view>
+          <app-view404 name="view404"></app-view404>
+        </iron-pages>
+      </app-header-layout>
+    </app-drawer-layout>
+  </template>
+
+  <script>
+
+    class AppShell extends Polymer.Element {
+      static get is() { return 'app-shell'; }
+
+      static get properties() {
+        return {
+          page: {
+            type: String,
+            reflectToAttribute: true,
+            observer: '_pageChanged',
+          },
+          routeData: Object,
+          subroute: String,
+          // This shouldn't be neccessary, but the Analyzer isn't picking up
+          // Polymer.Element#rootPath
+          rootPath: String,
+          appconfig: Object,
+        };
+      }
+      constructor() {
+        super();
+        this.user = {name: '..', email: '', uid: '', loggedIn: false}
+      }
+      ready() {
+        super.ready();
+        var config = {
+          apiKey: "AIzaSyDHAI9Acoxw8V6UuSWoMDWt3S_Er_rlFyg",
+          authDomain: "akatemia-d4c48.firebaseapp.com",
+          databaseURL: "https://akatemia-d4c48.firebaseio.com",
+          projectId: "akatemia-d4c48",
+          storageBucket: "akatemia-d4c48.appspot.com",
+          messagingSenderId: "41494415118"
+        };
+        firebase.initializeApp(config);
+
+        firebase.auth().onAuthStateChanged((user) => {
+          if (user) {
+            this.set('user.name', user.displayName);
+            this.set('user.email', user.email)
+            this.set('user.uid', user.uid);
+            this.set('user.loggedIn', true);
+          }
+          else {
+            this.set('user.name', '');
+            this.set('user.email', '')
+            this.set('user.uid', '');
+            this.set('user.loggedIn', false);
+          }
+        });
+      }
+
+      static get observers() {
+        return [
+          '_routePageChanged(routeData.page)',
+        ];
+      }
+      handleAuthError() {
+        console.log("ERORO")
+      }
+      _routePageChanged(page) {
+        // If no page was found in the route data, page will be an empty string.
+        // Default to 'view' in that case.
+        this.page = page || 'view';
+
+        // Close a non-persistent drawer when the page & route are changed.
+        if (!this.$.drawer.persistent) {
+          this.$.drawer.close();
+        }
+      }
+
+      _pageChanged(page) {
+        // Load page import on demand. Show 404 page if fails
+        var resolvedPageUrl = this.resolveUrl('app-' + page + '.html');
+        Polymer.importHref(
+            resolvedPageUrl,
+            null,
+            this._showPage404.bind(this),
+            true);
+      }
+
+      _showPage404() {
+        this.page = 'view404';
+      }
+    }
+
+    window.customElements.define(AppShell.is, AppShell);
+  </script>
+</dom-module>

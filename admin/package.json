@@ -1,0 +1,17 @@
+{
+  "name": "firebase-admin",
+  "version": "0.0.1",
+  "description": "Admin tool (CLI)",
+  "main": "firestore-admin.js",
+  "dependencies": {
+    "firebase-admin": "^5.8.0",
+    "moment": "^2.20.1",
+    "nconf": "^0.10.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT"
+}

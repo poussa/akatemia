@@ -1,0 +1,85 @@
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-label/iron-label.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="shared-styles.html">
+
+<script src="../bower_components/moment/moment.js"></script>
+
+<link rel="import" href="court-view.html">
+
+<dom-module id="app-view">
+  <template>
+    <style include="shared-styles iron-flex iron-flex-alignment iron-positioning">
+      :host {
+        display: block;
+        height: 100%;
+      }
+      .button-group {
+        @apply(--layout-horizontal);
+        color: var(--light-theme-text-color);
+        background-color: var(--light-primary-color);
+     }
+      .label {
+        @apply(--layout-horizontal);
+        @apply(--layout-center);        
+        @apply(--layout-center-justified);        
+      }
+      iron-label {
+        line-height: 2;
+      }
+    </style>
+      <div class="button-group">
+        <paper-button class="flex" on-tap="btnBack">
+          <iron-icon icon="arrow-back"></iron-icon>
+        </paper-button>
+        <iron-label class="label flex">[[displayDay]]</iron-label>
+        <paper-button class="flex" on-tap="btnForward">
+          <iron-icon icon="arrow-forward"></iron-icon>
+        </paper-button>
+      </div>
+      <court-view user="[[user]]" timestamp="[[timestamp]]" appconfig=[[appconfig]]></court-view>
+  </template>
+
+  <script>
+    class AppView extends Polymer.Element {
+      static get is() { return 'app-view'; }
+      static get properties() {
+        return {
+          moment: {
+            type: Object,
+            value: moment().startOf('day'),
+          },
+          timestamp: {
+            type: Number,
+            value: moment().startOf('day').valueOf()
+          },
+          appconfig: Object,
+        }
+      }
+      ready() {
+        super.ready();
+        this.formatDay();
+      }
+      formatDay() {
+        this.displayDay = this.moment.format('ddd, D.M')
+      }
+      btnBack(ev) {
+        this.moment.subtract(1, 'days');
+        this.timestamp = this.moment.valueOf();
+        this.formatDay();
+      }
+      btnForward(ev) {
+        this.moment.add(1, 'days');
+        this.timestamp = this.moment.valueOf();
+        this.formatDay();
+      }
+    }
+    window.customElements.define(AppView.is, AppView);
+  </script>
+</dom-module>

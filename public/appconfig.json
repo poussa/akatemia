@@ -1,0 +1,8 @@
+{
+    "api": "http://localhost:8000/api",
+    "collection": "reservations",
+    "courts": 2,
+    "first_hour": 7,
+    "last_hour": 21,
+    "interval": 60
+}

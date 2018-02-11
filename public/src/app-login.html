@@ -1,0 +1,116 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="app-login">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        padding: 10px;
+      }
+      paper-button.indigo {
+        background-color: var(--paper-indigo-500);
+        color: white;
+      }
+      paper-button[disabled] {
+        background-color: var(--light-theme-disabled-color)
+      }      
+    </style>
+  
+    <div class="card">
+      <h1>Login/Register</h1>
+      <paper-input id="email" label="Email" disabled="[[user.loggedIn]]"></paper-input>
+      <paper-input type="password" id="password" label="Password" disabled="[[user.loggedIn]]"></paper-input>
+      <template is="dom-if" if="[[!user.loggedIn]]">
+        <paper-button class="indigo" raised on-tap="_login">Login</paper-button>
+        <paper-button class="indigo" raised on-tap="_register">Register</paper-button>
+      </template>
+      <template is="dom-if" if="[[user.loggedIn]]">
+        <paper-button class="indigo" raised on-tap="_logout">Logout</paper-button>
+      </template>
+    </div>
+    <paper-toast id="toast"></paper-toast>
+  </template>
+
+  <script>
+    class AppLogin extends Polymer.Element {
+      static get is() { return 'app-login'; }
+      ready() {
+        super.ready();
+      }
+      _register() {
+        let email = this.$.email.value;
+        let password = this.$.password.value;
+
+        if (email == undefined || password == undefined) {
+          this.$.toast.show("email/password is missing");
+          return;
+        }
+        let query = firebase.firestore().collection("members").where('email', '==', email);
+
+        query.get().then((snapshot) => {
+          if (snapshot.size != 1) {
+            this.$.toast.show('Invalid member.');
+            return; 
+          }
+          let member = snapshot.docs[0].data();
+          if (member.value == false) {
+            this.$.toast.show('Invalid membership.');
+            return;            
+          }
+          firebase.auth().createUserWithEmailAndPassword(email, password).then((user) => {
+            console.log("New user: " + member.lastName);
+            let displayName = member.firstName.charAt(0) + '.' + member.lastName
+            user.updateProfile({displayName: displayName}).then(() => {
+              // We need to set this here since onAuthStateChanged is already called
+              // and does not pick up the displayName property change
+              this.set('user.name', displayName);
+              let message = 'Hello, ' + member.firstName + " " + member.lastName
+              this.$.toast.show(message);
+            }).catch((err) => {
+              this.$.toast.show(err.message);
+            });
+          }).catch((err) => {
+            this.$.toast.show(err.message);
+          });
+        }).catch((err) => {
+          this.$.toast.show(err.message);
+        });
+      }
+      
+      _login() {
+        let email = this.$.email.value;
+        let password = this.$.password.value;
+
+        if (email == undefined || password == undefined) {
+          this.$.toast.show("email/password is missing");
+          return;
+        }
+
+        firebase.auth().signInWithEmailAndPassword(email, password).then((response) => {
+          console.log("app-login: login")
+        })
+        .catch((err) => {
+          console.log(err.message)
+          this.$.toast.show(err.message);
+        });
+      }
+
+       _logout() {
+        firebase.auth().signOut().then(() => {
+          this.$.password.value = "";
+        }).catch((err) => {
+          console.log(err.message)
+        })
+      }
+    }
+    window.customElements.define(AppLogin.is, AppLogin);
+  </script>
+</dom-module>

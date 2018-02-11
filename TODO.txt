@@ -1,0 +1,5 @@
+- toast is behind the menu 
+- implement real time updates
+- statictics
+- color to the court-view
+- icons to selections
