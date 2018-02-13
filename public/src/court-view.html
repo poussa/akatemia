@@ -35,7 +35,6 @@
       [booked] {
         /* TODO */
       }
-
       paper-checkbox {
         @apply(--layout-horizontal);
         @apply(--layout-center);        
@@ -205,10 +204,14 @@
         return {start: start, end: end}
       }      
       _initItems() {
-        for (let hour = this.appconfig.first_hour; hour < this.appconfig.last_hour; hour++) {
+        let first_hour = moment().startOf('day').hour(this.appconfig.first_hour);
+        let last_hour = moment().startOf('day').hour(this.appconfig.last_hour);
+        let duration = this.appconfig.duration;
+
+        for (let hour = first_hour; hour.isBefore(last_hour); hour.add(duration, 'minutes')) {
           let row = {
-            starttime: moment().startOf('day').hour(hour),
-            endtime: moment().startOf('day').hour(hour+1)
+            starttime: hour.clone(),
+            endtime: hour.clone().add(duration, 'minutes')
           }
           row.courts = [];
           for (let court = 0; court < this.appconfig.courts; court++) {
@@ -234,7 +237,7 @@
         });
       }
       _onActiveItemChanged(e) {
-        if (this.user.loggedIn == true) {
+        if (this.user.loggedIn == true || this.appconfig.anonymous_reservations == true) {
           this.$.grid.detailsOpenedItems = [e.detail.value];
         }
       }

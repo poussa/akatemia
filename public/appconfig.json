@@ -4,5 +4,6 @@
     "courts": 2,
     "first_hour": 7,
     "last_hour": 21,
-    "interval": 60
+    "duration": 30,
+    "anonymous_reservations": false
 }

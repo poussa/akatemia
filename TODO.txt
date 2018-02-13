@@ -1,3 +1,5 @@
+- 60/90/120 min bookigs
+- passwodr reset email
 - toast is behind the menu 
 - implement real time updates
 - statictics
