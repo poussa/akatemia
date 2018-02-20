@@ -22,6 +22,9 @@
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-meta/iron-meta.html">
 
+<script src="../bower_components/moment/moment.js"></script>
+
+<link rel="lazy-import" href="court-view.html">
 <link rel="lazy-import" href="app-view.html">
 <link rel="lazy-import" href="app-login.html">
 <link rel="lazy-import" href="app-view404.html">
@@ -35,6 +38,12 @@
 
         height: 100%;
         display: block;
+      }
+      app-drawer {
+        --app-drawer-width: 180px;
+        --app-drawer-content-container: {
+          background-color: var(--paper-indigo-50);
+        }
       }
 
       app-drawer-layout:not([narrow]) [drawer-toggle] {
@@ -69,6 +78,10 @@
       iron-pages {
         height: 100%;
       }
+      .toolbar-item {
+        margin-left: 8px;
+        margin-top: 8px;
+      }
     </style>
         
     <iron-ajax auto url="appconfig.json" handle-as="json" last-response="{{appconfig}}"></iron-ajax>
@@ -89,7 +102,10 @@
     <app-drawer-layout fullbleed narrow="{{narrow}}">
       <!-- Drawer content -->
       <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
-        <app-toolbar>Valinnat</app-toolbar>
+        <app-toolbar>
+          <div top-item main-title class="toolbar-item">Akatemia Tennis</div>
+          <div bottom-item class="toolbar-item">[[user.name]]</div>
+        </app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
           <a name="login" href="[[rootPath]]login">Kirjaudu</a>
           <a name="view" href="[[rootPath]]view">Varaukset</a>
@@ -102,8 +118,9 @@
         <app-header slot="header">
           <app-toolbar>
             <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
-            <div main-title>Akatemia</div>
-            <div>[[user.name]]</div>
+            <div main-title>[[displayDay]]</div>
+            <paper-icon-button icon="my-icons:arrow-back" on-tap="back"></paper-icon-button>
+            <paper-icon-button icon="my-icons:chevron-right" on-tap="forward"></paper-icon-button>
           </app-toolbar>
         </app-header>
 
@@ -113,7 +130,7 @@
             fallback-selection="view404"
             role="main">
           <app-login name="login" user="{{user}}"></app-login>
-          <app-view name="view" appconfig=[[appconfig]] user="[[user]]"></app-view>
+          <app-view name="view" user="[[user]]" timestamp="[[timestamp]]" appconfig=[[appconfig]]></app-view>
           <app-view404 name="view404"></app-view404>
         </iron-pages>
       </app-header-layout>
@@ -138,14 +155,23 @@
           // Polymer.Element#rootPath
           rootPath: String,
           appconfig: Object,
+          moment: {
+            type: Object,
+            value: moment().startOf('day'),
+          },
+          timestamp: {
+            type: Number,
+            value: moment().startOf('day').valueOf()
+          }
         };
       }
       constructor() {
         super();
-        this.user = {name: '..', email: '', uid: '', loggedIn: false}
+        this.user = {name: '...', email: '', uid: '', loggedIn: false}
       }
       ready() {
         super.ready();
+        this.formatDay();
         var config = {
           apiKey: "AIzaSyDHAI9Acoxw8V6UuSWoMDWt3S_Er_rlFyg",
           authDomain: "akatemia-d4c48.firebaseapp.com",
@@ -177,9 +203,26 @@
           '_routePageChanged(routeData.page)',
         ];
       }
-      handleAuthError() {
-        console.log("ERORO")
+
+      formatDay() {
+        this.displayDay = this.moment.format('dd D.M')
       }
+
+      forward() {
+        this.moment.add(1, 'days');
+        this.timestamp = this.moment.valueOf();
+        this.formatDay();
+      }
+
+      back() {
+        this.moment.subtract(1, 'days');
+        this.timestamp = this.moment.valueOf();
+        this.formatDay();
+      }
+
+      handleAuthError() {
+        console.log("AUTH ERROR");
+      } 
       _routePageChanged(page) {
         // If no page was found in the route data, page will be an empty string.
         // Default to 'view' in that case.
