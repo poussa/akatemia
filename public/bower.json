@@ -16,7 +16,7 @@
     "polymer": "Polymer/polymer#^2.3.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0",
     "polymerfire": "https://github.com/firebase/polymerfire.git#firestore",
-    "firebase": "^4.8.2",
+    "firebase": "^4.10.1",
     "moment": "^2.20.1",
     "paper-toast": "^2.0.0",
     "iron-ajax": "^2.0.8",
@@ -26,7 +26,8 @@
     "paper-input": "^2.1.0",
     "vaadin-grid": "^4.1.1",
     "vaadin-material-theme": "^0.3.0",
-    "paper-checkbox": "^2.0.2"
+    "paper-checkbox": "^2.0.2",
+    "paper-spinner": "^2.1.0"
   },
   "resolutions": {
     "polymer": "^2.0.0"
