@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/vaadin-material-theme/vaadin-grid.html">
 <link rel="import" href="../bower_components/vaadin-grid/all-imports.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
@@ -19,8 +20,8 @@
       #grid {
         height: 100%;
       }
-      paper-button.indigo {
-        background-color: var(--paper-indigo-500);
+      paper-button {
+        background-color: var(--app-primary-color);
         color: white;
       }
       paper-button[disabled] {
@@ -33,15 +34,17 @@
         box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14);
       }
       [booked] {
-        /* TODO */
+        font-weight: bold;
       }
       paper-checkbox {
+        --paper-checkbox-checked-color: var(--app-primary-color);
         @apply(--layout-horizontal);
         @apply(--layout-center);        
         @apply(--layout-center-justified);        
       }
     </style>
 
+    <!--paper-spinner-lite id="spinner" active="[[loading]]"></paper-spinner-lite-->
     <vaadin-grid
       on-active-item-changed="_onActiveItemChanged" 
       data-provider="[[dataProvider]]"
@@ -49,7 +52,7 @@
       id="grid">
       <template class="row-details">
         <div class="details">
-          <paper-button disabled=[[!_canBook(item.courts)]] on-tap="_reserve" id="btn_[[index]]" raised class="indigo">Varaa</paper-button>
+          <paper-button disabled=[[!_canBook(item.courts)]] on-tap="_reserve" id="btn_[[index]]" raised>Varaa</paper-button>
           <paper-checkbox disabled=[[_isBooked(item.courts.0)]] checked="[[item.courts.0.booked]]" class="flex center" id="cb_[[index]]_1">K1</paper-checkbox>
           <paper-checkbox disabled=[[_isBooked(item.courts.1)]] checked="[[item.courts.1.booked]]" class="flex center" id="cb_[[index]]_2">K2</paper-checkbox>
         </div>
@@ -64,7 +67,7 @@
       </vaadin-grid-column>
       <vaadin-grid-column>
         <template class="header">Kenttä 2</template>
-        <template>[[item.courts.1.user]]</template>
+        <template><div booked$="[[item.courts.1.booked]]">[[item.courts.1.user]]</div></template>
       </vaadin-grid-column>
     </vaadin-grid>
   </template>
@@ -82,7 +85,11 @@
           items: {
             type: Array,
             value: []
-          }
+          },
+          loading: {
+              type: Boolean,
+              notify: true
+            }
         };
       }
       ready() {
@@ -104,7 +111,7 @@
                   .orderBy('starttime')
                   .startAt(start.toDate())
                   .endAt(end.toDate());
-
+          this.loading = true;
           query.get().then((snapshot) => {
             console.log("reservations: ", snapshot.size);
             snapshot.forEach((doc) => {
@@ -120,14 +127,9 @@
               })
             });
             callback(this.items, this.items.length);        
+            this.loading = false;
           });
         }
-      }
-      _toDate(obj) {
-
-      }
-      _toMoment(obj) {
-
       }
 
       _reserve(e) {

@@ -17,12 +17,13 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 
-<link rel="import" href="my-icons.html">
+<link rel="import" href="app-icons.html">
 
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-meta/iron-meta.html">
 
 <script src="../bower_components/moment/moment.js"></script>
+<script src="../bower_components/moment/locale/fi.js" charset="UTF-8"></script>
 
 <link rel="lazy-import" href="court-view.html">
 <link rel="lazy-import" href="app-view.html">
@@ -38,12 +39,6 @@
 
         height: 100%;
         display: block;
-      }
-      app-drawer {
-        --app-drawer-width: 180px;
-        --app-drawer-content-container: {
-          background-color: var(--paper-indigo-50);
-        }
       }
 
       app-drawer-layout:not([narrow]) [drawer-toggle] {
@@ -78,9 +73,17 @@
       iron-pages {
         height: 100%;
       }
+      a > paper-icon-button {
+        color: var(--app-primary-color);
+      }
       .toolbar-item {
         margin-left: 8px;
         margin-top: 8px;
+      }
+      .toolbar-item-small {
+        margin-left: 8px;
+        margin-top: 8px;
+        font-size: 16px;
       }
     </style>
         
@@ -104,11 +107,11 @@
       <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
         <app-toolbar>
           <div top-item main-title class="toolbar-item">Akatemia Tennis</div>
-          <div bottom-item class="toolbar-item">[[user.name]]</div>
+          <div bottom-item class="toolbar-item-small">[[user.name]]</div>
         </app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="login" href="[[rootPath]]login">Kirjaudu</a>
-          <a name="view" href="[[rootPath]]view">Varaukset</a>
+          <a name="login" href="[[rootPath]]login"><paper-icon-button icon="app-icons:account-circle"></paper-icon-button>Kirjaudu</a>
+          <a name="view" href="[[rootPath]]view"><paper-icon-button icon="app-icons:event"></paper-icon-button>Varaukset</a>
         </iron-selector>
       </app-drawer>
 
@@ -117,10 +120,10 @@
 
         <app-header slot="header">
           <app-toolbar>
-            <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
+            <paper-icon-button icon="app-icons:menu" drawer-toggle></paper-icon-button>
             <div main-title>[[displayDay]]</div>
-            <paper-icon-button icon="my-icons:arrow-back" on-tap="back"></paper-icon-button>
-            <paper-icon-button icon="my-icons:chevron-right" on-tap="forward"></paper-icon-button>
+            <paper-icon-button icon="app-icons:navigate-before" on-tap="back"></paper-icon-button>
+            <paper-icon-button icon="app-icons:navigate-next" on-tap="forward"></paper-icon-button>
           </app-toolbar>
         </app-header>
 
@@ -138,6 +141,7 @@
   </template>
 
   <script>
+    moment.locale('fi');
 
     class AppShell extends Polymer.Element {
       static get is() { return 'app-shell'; }
