@@ -12,23 +12,7 @@ admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
 
-var dbConfig = { days: 0 }
-if (nconf.get('db-config')) {
-    dbConfig = require(nconf.get('db-config'))
-}
-
-var collection = '/bookings'
-if (nconf.get('collection')) {
-    collection = nconf.get('collection');
-}
-var date = null;
-if (nconf.get('date')) {
-    date = nconf.get('date');
-}
-var days = 1;
-if (nconf.get('days')) {
-    days = nconf.get('days');
-}
+var collection = '/members'
 
 var db = admin.firestore();
 
@@ -108,14 +92,49 @@ function db_delete() {
     console.log("use: firebase firestore:delete -r ", dbConfig.collection)
 }
 
+function deluser(email) {
+
+    let ref = db.collection(collection);
+    let query = ref.where('email', '==', email);
+    query.get().then(snapshot => {
+        console.log("Found users: ", snapshot.size);
+        snapshot.forEach(doc => {
+            console.log(doc.id, '=>', doc.data());
+            ref.doc(doc.id).delete().then(res => {
+                console.log("Deleted, ", res);
+            }).catch(err => {
+                console.log("Error in delete, ", err);
+            })
+        })
+    }).catch(err => {
+        console.log(err);
+    })
+}
+
+function adduser(user) {
+    db.collection(collection).add(user).then(function(docRef) {
+        console.log("Document written with ID: ", docRef.id);
+    }).catch(function(err) {
+        console.error("Error adding document: ", err);
+    });
+
+}
+
 if (nconf.get('write')) {
     db_write(true);
 } else if (nconf.get('read')) {
     db_read();
 } else if (nconf.get('query')) {
     db_query();
-} else if (nconf.get('delete')) {
-    db_delete();
+} else if (nconf.get('deluser')) {
+    let email = nconf.get('email');
+    deluser(email);
+} else if (nconf.get('adduser')) {
+    let email = nconf.get('email');
+    let lastname = nconf.get('lastname');
+    let firstname = nconf.get('firstname');
+    let user = {firstName: firstname, lastName: lastname, email: email, valid: true}
+    adduser(user);
 } else {
     console.log("Don't know what to do?")
 }
