@@ -121,7 +121,8 @@
               data.endtime = moment(data.endtime);
               this.items.forEach((item, idx) => {
                 if (data.starttime.isSame(item.starttime)) {
-                  console.log('matching time: ', data.starttime.format("hh:mm"));
+                  console.log('match: %s (%o/%o)', 
+                    data.starttime.format("hh:mm"), data.courts[0].booked, data.courts[1].booked);
                   this.items[idx] = data;
                 }
               })
@@ -136,11 +137,11 @@
         let activeItem = this.$.grid.activeItem;
         let row = Number(e.target.id.split('_')[1]);
         // Access element inside generated template code
-        let checkBox_1 = this.shadowRoot.querySelector("#cb_" + row + "_1");
-        let checkBox_2 = this.shadowRoot.querySelector("#cb_" + row + "_2");
-        if (checkBox_1.checked != activeItem.courts[0].booked) {
-          activeItem.courts[0].booked = checkBox_1.checked;
-          if (checkBox_1.checked) {
+        let checkBox_0 = this.shadowRoot.querySelector("#cb_" + row + "_1");
+        let checkBox_1 = this.shadowRoot.querySelector("#cb_" + row + "_2");
+        if (checkBox_0.checked != activeItem.courts[0].booked) {
+          activeItem.courts[0].booked = checkBox_0.checked;
+          if (checkBox_0.checked) {
             activeItem.courts[0].user = this.user.name;
             activeItem.courts[0].uid = this.user.uid;
           }
@@ -149,9 +150,9 @@
             delete activeItem.courts[0].uid;
           }
         }
-        if (checkBox_2.checked != activeItem.courts[1].booked) {
-          activeItem.courts[1].booked = checkBox_2.checked;
-          if (checkBox_2.checked) {
+        if (checkBox_1.checked != activeItem.courts[1].booked) {
+          activeItem.courts[1].booked = checkBox_1.checked;
+          if (checkBox_1.checked) {
             activeItem.courts[1].user = this.user.name;
             activeItem.courts[1].uid = this.user.uid;
           }
@@ -160,13 +161,13 @@
             delete activeItem.courts[1].uid;
           }
         }
-
+        console.log("reserve: ", activeItem);
         let collection = this.db.collection("reservations");
         let doc = {
-            starttime: activeItem.starttime.toDate(),
-            endtime: activeItem.endtime.toDate(),
-            courts: activeItem.courts          
-          }
+          starttime: activeItem.starttime.toDate(),
+          endtime: activeItem.endtime.toDate(),
+          courts: activeItem.courts
+        }
         if (activeItem.id == undefined) {
           // new reservation
           collection.add(doc).then((docRef) => {
@@ -231,6 +232,7 @@
         this.items.forEach((item) => {
           item.starttime.set(date);
           item.endtime.date(date);
+          delete item.id;
           item.courts.forEach((court) => {
             court.booked = false;
             delete court.user;
