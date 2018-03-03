@@ -170,7 +170,7 @@
       }
       constructor() {
         super();
-        this.user = {name: '...', email: '', uid: '', loggedIn: false}
+        this.user = {name: '...', email: '', uid: '', loggedIn: false, connected: false}
       }
       ready() {
         super.ready();
@@ -184,7 +184,15 @@
           messagingSenderId: "41494415118"
         };
         firebase.initializeApp(config);
-
+        firebase.database().ref(".info/connected").on("value", (snap) => {
+          if (snap.val() === true) {
+            console.log("connected");
+            this.set('user.connected', true);
+          } else {
+            console.log("not connected");
+            this.set('user.connected', false);
+          }
+        });
         firebase.auth().onAuthStateChanged((user) => {
           if (user) {
             this.set('user.name', user.displayName);
