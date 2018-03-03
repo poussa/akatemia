@@ -1,7 +1,9 @@
+- offine behavior
+- spinner when loading
+- same page selection in drawer closes the drawer
 - 60/90/120 min bookigs
 - passwodr reset email
 - toast is behind the menu 
 - implement real time updates
 - statictics
 - color to the court-view
-- icons to selections
