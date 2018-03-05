@@ -35,11 +35,11 @@
       <h1>Kirjaudu</h1>
       <paper-input id="email" label="Sähköposti" disabled="[[user.loggedIn]]"></paper-input>
       <paper-input type="password" id="password" label="Salasana" disabled="[[user.loggedIn]]"></paper-input>
-      <paper-checkbox id="password_lost" disabled="[[user.loggedIn]]" on-change="_password_lost">Salasana unohtunut</paper-checkbox>
+      <paper-checkbox id="password_lost" disabled="[[user.loggedIn]]" on-change="_password_lost_changed">Salasana unohtunut</paper-checkbox>
       <div>
         <template is="dom-if" if="[[!user.loggedIn]]">
-          <paper-button raised on-tap="_login">Sisään</paper-button>
-          <paper-button raised on-tap="_register">Rekisteröidy</paper-button>
+          <paper-button id="btn" raised on-tap="_login">[[btnTextLogin]]</paper-button>
+          <paper-button id="btnRegister" raised on-tap="_register" disabled="[[user.requestPassword]]">Rekisteröidy</paper-button>
         </template>
         <template is="dom-if" if="[[user.loggedIn]]">
           <paper-button raised on-tap="_logout">Ulos</paper-button>
@@ -54,6 +54,8 @@
       static get is() { return 'app-login'; }
       ready() {
         super.ready();
+        this.btnTextLogin = "Sisään";
+        this.btnTextSend = "Lähetä";
       }
 
       _register() {
@@ -100,8 +102,26 @@
         let email = this.$.email.value;
         let password = this.$.password.value;
 
-        if (email == undefined || password == undefined) {
-          this.$.toast.show("email/password is missing");
+        if (email == undefined) {
+          this.$.toast.show("email is missing");
+          return;
+        }
+
+        if (this.$.password_lost.checked) {
+          firebase.auth().sendPasswordResetEmail(email).then(() => {
+            this.$.toast.show("email sent");
+            this.shadowRoot.querySelector("#btn").textContent = this.btnTextLogin;
+            this.set('user.requestPassword', false);
+             // this does not generate event so btn text not changed
+            this.$.password_lost.checked = false;
+          }).catch((error) => {
+            this.$.toast.show("error in email sending");
+          });
+          return;
+        }
+
+        if (password == undefined) {
+          this.$.toast.show("password is missing");
           return;
         }
 
@@ -122,9 +142,16 @@
         })
       }
 
-      _password_lost(event) {
-        console.log(event);
-        console.log(this.$.password_lost.checked)
+      _password_lost_changed(event) {
+        var button = this.shadowRoot.querySelector("#btn")
+        if (this.$.password_lost.checked) {
+          button.textContent = this.btnTextSend;
+          this.set('user.requestPassword', true);
+        }
+        else {
+          button.textContent = this.btnTextLogin;
+          this.set('user.requestPassword', false);
+        }
       }
     }
     window.customElements.define(AppLogin.is, AppLogin);
