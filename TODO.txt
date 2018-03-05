@@ -1,4 +1,4 @@
-- offine behavior
++ offine behavior
 - spinner when loading
 - same page selection in drawer closes the drawer
 - 60/90/120 min bookigs
