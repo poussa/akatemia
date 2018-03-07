@@ -2,7 +2,6 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
-<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
@@ -46,7 +45,6 @@
         </template>
       </div>
     </div>
-    <paper-toast id="toast"></paper-toast>
   </template>
 
   <script>
@@ -56,6 +54,7 @@
         super.ready();
         this.btnTextLogin = "Sisään";
         this.btnTextSend = "Lähetä";
+        this.toast = document.querySelector("app-shell").shadowRoot.querySelector('#toast');
       }
 
       _register() {
@@ -63,19 +62,19 @@
         let password = this.$.password.value;
 
         if (email == undefined || password == undefined) {
-          this.$.toast.show("email/password is missing");
+          this.toast.show("email/password is missing");
           return;
         }
         let query = firebase.firestore().collection("members").where('email', '==', email);
 
         query.get().then((snapshot) => {
           if (snapshot.size != 1) {
-            this.$.toast.show('Invalid member.');
+            this.toast.show('Invalid member.');
             return; 
           }
           let member = snapshot.docs[0].data();
           if (member.value == false) {
-            this.$.toast.show('Invalid membership.');
+            this.toast.show('Invalid membership.');
             return;            
           }
           firebase.auth().createUserWithEmailAndPassword(email, password).then((user) => {
@@ -86,15 +85,15 @@
               // and does not pick up the displayName property change
               this.set('user.name', displayName);
               let message = 'Hello, ' + member.firstName + " " + member.lastName
-              this.$.toast.show(message);
+              this.toast.show(message);
             }).catch((err) => {
-              this.$.toast.show(err.message);
+              this.toast.show(err.message);
             });
           }).catch((err) => {
-            this.$.toast.show(err.message);
+            this.toast.show(err.message);
           });
         }).catch((err) => {
-          this.$.toast.show(err.message);
+          this.toast.show(err.message);
         });
       }
       
@@ -103,25 +102,25 @@
         let password = this.$.password.value;
 
         if (email == undefined) {
-          this.$.toast.show("email is missing");
+          this.toast.show("email is missing");
           return;
         }
 
         if (this.$.password_lost.checked) {
           firebase.auth().sendPasswordResetEmail(email).then(() => {
-            this.$.toast.show("email sent");
+            this.toast.show("email sent");
             this.shadowRoot.querySelector("#btn").textContent = this.btnTextLogin;
             this.set('user.requestPassword', false);
              // this does not generate event so btn text not changed
             this.$.password_lost.checked = false;
           }).catch((error) => {
-            this.$.toast.show("error in email sending");
+            this.toast.show("error in email sending");
           });
           return;
         }
 
         if (password == undefined) {
-          this.$.toast.show("password is missing");
+          this.toast.show("password is missing");
           return;
         }
 
@@ -130,7 +129,7 @@
         })
         .catch((err) => {
           console.log(err.message)
-          this.$.toast.show(err.message);
+          this.toast.show(err.message);
         });
       }
 
