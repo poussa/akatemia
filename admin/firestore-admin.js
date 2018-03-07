@@ -92,6 +92,19 @@ function db_delete() {
     console.log("use: firebase firestore:delete -r ", dbConfig.collection)
 }
 
+function getusers() {
+    let ref = db.collection(collection);
+    ref.get().then(snapshot => {
+        console.log("Found users: ", snapshot.size);
+        snapshot.forEach(doc => {
+            let user = doc.data();
+            console.log("%s, %s, %s", user.firstName, user.lastName, user.email);
+        })
+    }).catch(err => {
+        console.log(err);
+    })
+}
+
 function deluser(email) {
 
     let ref = db.collection(collection);
@@ -126,9 +139,10 @@ if (nconf.get('write')) {
     db_read();
 } else if (nconf.get('query')) {
     db_query();
+} else if (nconf.get('getusers')) {
+    getusers();
 } else if (nconf.get('deluser')) {
-    let email = nconf.get('email');
-    deluser(email);
+    deluser();
 } else if (nconf.get('adduser')) {
     let email = nconf.get('email');
     let lastname = nconf.get('lastname');
