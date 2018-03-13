@@ -9,90 +9,20 @@ nconf.argv()
    .file({ file: path.join(__dirname, 'config.json') });
 
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: "https://akatemia-d4c48.firebaseio.com"
 });
 
 var collection = '/members'
 
 var db = admin.firestore();
 
-function db_write(booked) {
-    let error = false;
-    let msg = "";
-
-    for (var day = 0; (day < dbConfig.days) && error == false; day++) {
-        for (var hour = dbConfig.first; (hour < dbConfig.last + 1) && error == false; hour++) {
-            let start = new Date(dbConfig.date);
-            start.setDate(start.getDate() + day);
-            start.setHours(hour);
-            start.setMinutes(0);
-            start.setSeconds(0);
-            start.setMilliseconds(0);
-            
-            let end = new Date(start);
-            end.setHours(end.getHours()+1);
-            let booking = {
-                starttime: start,
-                endtime: end
-            }
-            let courts = [];
-            for (court = 1; (court < (dbConfig.courts + 1)) && error == false; court++) {
-                let obj = {court: court, booked: booked}
-                if (booked) {
-                    obj.user = "user_0"
-                }
-                courts.push(obj);
-            }
-            booking["courts"] = courts;
-            console.log(booking)
-            db.collection(collection).add(booking).then(function(docRef) {
-                console.log("Document written with ID: ", docRef.id);
-            }).catch(function(err) {
-                console.error("Error adding document: ", err);
-            });
-        }
-    }
+function usage() {
+    console.log("invalid input");
+    process.exit(1);
 }
 
-function db_read() {
-    db.collection(collection).get().then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          console.log(doc.data())
-        });
-    })
-    .catch((err) => {
-        console.log("Read error: ", err);
-    });
-}
-
-function create_query(lval, op, rval) {
-    console.log("%s %s %s",lval, op, rval);
-    return collectionFef = db.collection(collection).where(lval, op, rval);    
-}
-
-function db_query() {
-    let queryRef = create_query('booked', '==', 'true');
-
-    start = new Date(date);
-    let end = new Date(start);
-    end.setDate(end.getDate() + days);
-
-    queryRef = db.collection(collection).orderBy('starttime').startAt(start).endAt(end)
-    queryRef.get().then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-            console.log(doc.data());
-        });
-    })
-    .catch((err) => {
-        console.log(err);
-    });
-}
-
-function db_delete() {
-    console.log("use: firebase firestore:delete -r ", dbConfig.collection)
-}
-
-function getusers() {
+function get_members() {
     let ref = db.collection(collection);
     ref.get().then(snapshot => {
         console.log("Found users: ", snapshot.size);
@@ -105,7 +35,7 @@ function getusers() {
     })
 }
 
-function deluser(email) {
+function del_member(email) {
 
     let ref = db.collection(collection);
     let query = ref.where('email', '==', email);
@@ -124,7 +54,7 @@ function deluser(email) {
     })
 }
 
-function adduser(user) {
+function add_member(user) {
     db.collection(collection).add(user).then(function(docRef) {
         console.log("Document written with ID: ", docRef.id);
     }).catch(function(err) {
@@ -133,23 +63,91 @@ function adduser(user) {
 
 }
 
-if (nconf.get('write')) {
-    db_write(true);
-} else if (nconf.get('read')) {
-    db_read();
-} else if (nconf.get('query')) {
-    db_query();
-} else if (nconf.get('getusers')) {
-    getusers();
-} else if (nconf.get('deluser')) {
-    deluser();
-} else if (nconf.get('adduser')) {
+function get_users(nextPageToken) {
+    // List batch of users, 1000 at a time.
+    admin.auth().listUsers(1000, nextPageToken)
+      .then(function(listUsersResult) {
+        listUsersResult.users.forEach(function(userRecord) {
+          console.log("user", userRecord.toJSON());
+        });
+        if (listUsersResult.pageToken) {
+          // List next batch of users.
+          get_users(listUsersResult.pageToken)
+        }
+      })
+      .catch(function(error) {
+        console.log("Error listing users:", error);
+      });
+}
+
+function get_user(email) {
+    admin.auth().getUserByEmail(email)
+    .then(function(userRecord) {
+      // See the UserRecord reference doc for the contents of userRecord.
+      console.log(userRecord.toJSON());
+    })
+    .catch(function(error) {
+      console.log("Error fetching user data:", error);
+    })
+}
+
+function add_user(user) {
+    admin.auth().createUser(user)
+    .then(function(userRecord) {
+        // See the UserRecord reference doc for the contents of userRecord.
+        console.log("Successfully created new user:", userRecord.uid);
+    })
+    .catch(function(error) {
+        console.log("Error creating new user:", error);
+    });
+}
+
+function del_user(uid) {
+    admin.auth().deleteUser(uid)
+    .then(function() {
+      console.log("Successfully deleted user");
+    })
+    .catch(function(error) {
+      console.log("Error deleting user:", error);
+    });
+}
+
+if (nconf.get('get-members')) {
+    get_members();
+} else if (nconf.get('del-member')) {
+    del_member();
+} else if (nconf.get('add-member')) {
     let email = nconf.get('email');
     let lastname = nconf.get('lastname');
     let firstname = nconf.get('firstname');
-    let user = {firstName: firstname, lastName: lastname, email: email, valid: true}
-    adduser(user);
+    let member = {firstName: firstname, lastName: lastname, email: email, valid: true}
+    add_member(member);
+} else if (nconf.get('get-users')) {
+    get_users();
+} else if (nconf.get('get-user')) {
+    let email = nconf.get('email');
+    if (email == undefined)
+        usage();
+    get_user(email);
+} else if (nconf.get('del-user')) {
+    let uid = nconf.get('uid');
+    if (uid == undefined)
+        usage();
+    
+    del_user(uid);
+} else if (nconf.get('add-user')) {
+    let email = nconf.get('email');
+    let password = nconf.get('password');
+    let displayname = nconf.get('displayname');
+
+    if (email == undefined || password == undefined || displayname == undefined)
+        usage();
+
+    let user = {email: email, password: password, displayName: displayname, disabled: false}
+    console.log(user);
+    add_user(user);
 } else {
     console.log("Don't know what to do?")
 }
 
+//process.exit(0);

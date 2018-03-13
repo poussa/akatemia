@@ -4,7 +4,7 @@
   "description": "Admin tool (CLI)",
   "main": "firestore-admin.js",
   "dependencies": {
-    "firebase-admin": "^5.8.0",
+    "firebase-admin": "^5.10.0",
     "moment": "^2.20.1",
     "nconf": "^0.10.0"
   },
