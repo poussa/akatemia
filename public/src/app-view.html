@@ -99,6 +99,7 @@
 
         this._initItems();
         grid.size = this.appconfig.last_hour - this.appconfig.first_hour;
+        this.unsubscribe = null;
 
         this.dataProvider = (params, callback) => {
           let query = this.db.collection("reservations");
@@ -112,7 +113,10 @@
                   .startAt(start.toDate())
                   .endAt(end.toDate());
           this.loading = true;
-          query.get().then((snapshot) => {
+          if (this.unsubscribe != null) {
+            this.unsubscribe();
+          }
+          this.unsubscribe = query.onSnapshot((snapshot) => {
             console.log("reservations: ", snapshot.size);
             snapshot.forEach((doc) => {
               let data = doc.data();
@@ -201,11 +205,6 @@
           this.$.grid.clearCache();
         }
       }
-      _setMoment(first, last) {
-        let start = this.moment.clone().hour(first);
-        let end = this.moment().hour(last);
-        return {start: start, end: end}
-      }      
       _initItems() {
         let first_hour = moment().startOf('day').hour(this.appconfig.first_hour);
         let last_hour = moment().startOf('day').hour(this.appconfig.last_hour);
