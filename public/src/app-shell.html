@@ -11,9 +11,14 @@
 
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/iron-input/iron-input.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+
+<link rel="import" href="../bower_components/vaadin-material-theme/vaadin-date-picker.html">
+<link rel="import" href="../bower_components/vaadin-date-picker/vaadin-date-picker-light.html">
 
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
@@ -30,9 +35,19 @@
 <link rel="lazy-import" href="app-login.html">
 <link rel="lazy-import" href="app-view404.html">
 
+<dom-module id="picker-light-styles" theme-for="vaadin-date-picker-light">
+  <template>
+    <style include="vaadin-date-picker-default-theme">
+      [part="overlay"] {
+        height: 50vh;
+      }
+    </style>
+  </template>
+</dom-module>
+
 <dom-module id="app-shell">
   <template>
-    <style>
+    <style include="iron-flex">
       :host {
         --app-primary-color: #4285f4;
         --app-secondary-color: black;
@@ -85,6 +100,23 @@
         margin-top: 8px;
         font-size: 16px;
       }
+
+      vaadin-date-picker-light {
+        background: none;
+        color: black;
+      }
+
+      #datePicker input {
+        border: none;
+        font-size: var(--app-toolbar-font-size);
+        background: none;
+        color: white;
+        text-align: center;
+      }
+
+      #div-menu-picker {
+        @apply --layout-flex;
+      }
     </style>
         
     <iron-ajax auto url="appconfig.json" handle-as="json" last-response="{{appconfig}}"></iron-ajax>
@@ -121,9 +153,19 @@
         <app-header slot="header">
           <app-toolbar>
             <paper-icon-button icon="app-icons:menu" drawer-toggle></paper-icon-button>
-            <div main-title>[[displayDay]]</div>
-            <paper-icon-button icon="app-icons:navigate-before" on-tap="back"></paper-icon-button>
-            <paper-icon-button icon="app-icons:navigate-next" on-tap="forward"></paper-icon-button>
+              <div id="div-menu-picker">
+                <vaadin-date-picker-light on-value-changed="_dateChanged" min="2018-01-01" max="2018-12-31" id="datePicker">
+                  <div>
+                    <iron-input>
+                      <input>
+                    </iron-input>
+                  </div>
+                </vaadin-date-picker-light>
+              </div>
+              <div id="div-menu-navi">
+                <paper-icon-button icon="app-icons:navigate-before" on-tap="back"></paper-icon-button>
+                <paper-icon-button icon="app-icons:navigate-next" on-tap="forward"></paper-icon-button>
+              </div>
           </app-toolbar>
         </app-header>
 
@@ -176,6 +218,7 @@
       }
       ready() {
         super.ready();
+        this.localize();
         this.formatDay();
         var config = {
           apiKey: "AIzaSyDHAI9Acoxw8V6UuSWoMDWt3S_Er_rlFyg",
@@ -219,7 +262,7 @@
       }
 
       formatDay() {
-        this.displayDay = this.moment.format('dd D.M')
+        this.$.datePicker.value = this.moment.format('YYYY-MM-DD')
       }
 
       forward() {
@@ -232,6 +275,22 @@
         this.moment.subtract(1, 'days');
         this.timestamp = this.moment.valueOf();
         this.formatDay();
+      }
+
+      _dateChanged(e) {
+        // TODO: we get 2 events, first w/ date then w/ ""
+        if (e.detail.value !== "") {
+          console.log("date-picker: ", e.detail.value);
+          let parts = e.detail.value.split('-');
+          // TODO: this will break in any other date format...
+          this.moment.set({
+            year: parts[0],
+            month: parseInt(parts[1]) - 1,
+            date: parts[2]
+          });
+          this.timestamp = this.moment.valueOf();
+          this.formatDay();
+        }
       }
 
       handleAuthError() {
@@ -260,6 +319,25 @@
 
       _showPage404() {
         this.page = 'view404';
+      }
+
+      localize() {
+        this.$.datePicker.set('i18n.week','viikko');
+        this.$.datePicker.set('i18n.calendar','kalenteri');
+        this.$.datePicker.set('i18n.clear','tyhjennä');
+        this.$.datePicker.set('i18n.today','tänään');
+        this.$.datePicker.set('i18n.cancel','peruuta');
+        this.$.datePicker.set('i18n.firstDayOfWeek',1);
+        let months = 'tammikuu_helmikuu_maaliskuu_huhtikuu_toukokuu_kesäkuu_heinäkuu_elokuu_syyskuu_lokakuu_marraskuu_joulukuu'.split('_');
+        this.$.datePicker.set('i18n.monthNames', months);
+        let weekdays = 'sunnuntai_maanantai_tiistai_keskiviikko_torstai_perjantai_lauantai'.split('_');
+        this.$.datePicker.set('i18n.weekdays', weekdays);
+        let weekdaysShort = 'su_ma_ti_ke_to_pe_la'.split('_');
+        this.$.datePicker.set('i18n.weekdaysShort', weekdaysShort);
+        this.$.datePicker.i18n.formatDate = function(date) {
+          return moment(date).format('dd D.M');
+        }
+        this.$.datePicker.i18n.parseDate = null
       }
     }
 
