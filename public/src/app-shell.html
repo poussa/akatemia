@@ -35,11 +35,14 @@
 <link rel="lazy-import" href="app-login.html">
 <link rel="lazy-import" href="app-view404.html">
 
-<dom-module id="picker-light-styles" theme-for="vaadin-date-picker-light">
+<dom-module id="overlay-styles" theme-for="vaadin-date-picker-overlay">
   <template>
-    <style include="vaadin-date-picker-default-theme">
-      [part="overlay"] {
-        height: 50vh;
+    <style include="vaadin-date-picker-overlay-default-theme">
+      [part="overlay-header"] {
+        display: none;
+      }
+      [part="years"] {
+        display: none;
       }
     </style>
   </template>
@@ -47,7 +50,7 @@
 
 <dom-module id="app-shell">
   <template>
-    <style include="iron-flex">
+    <style include="iron-flex iron-flex-alignment iron-flex-factors">
       :host {
         --app-primary-color: #4285f4;
         --app-secondary-color: black;
@@ -114,7 +117,16 @@
         text-align: center;
       }
 
+      .container {
+        @apply --layout-horizontal;
+        @apply --layout-center;
+        width: 100%;
+      }
+
       #div-menu-picker {
+        @apply --layout-flex;
+      }
+      #div-menu-navi {
         @apply --layout-flex;
       }
     </style>
@@ -152,12 +164,13 @@
 
         <app-header slot="header">
           <app-toolbar>
-            <paper-icon-button icon="app-icons:menu" drawer-toggle></paper-icon-button>
+            <div class="container">
+              <paper-icon-button icon="app-icons:menu" drawer-toggle></paper-icon-button>
               <div id="div-menu-picker">
                 <vaadin-date-picker-light on-value-changed="_dateChanged" min="2018-01-01" max="2018-12-31" id="datePicker">
                   <div>
                     <iron-input>
-                      <input>
+                      <input size="10"/>
                     </iron-input>
                   </div>
                 </vaadin-date-picker-light>
@@ -166,6 +179,7 @@
                 <paper-icon-button icon="app-icons:navigate-before" on-tap="back"></paper-icon-button>
                 <paper-icon-button icon="app-icons:navigate-next" on-tap="forward"></paper-icon-button>
               </div>
+            </div>
           </app-toolbar>
         </app-header>
 
