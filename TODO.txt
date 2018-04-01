@@ -1,9 +1,7 @@
-+ offine behavior
+- IE11 testing (does not work)
+- ES6 to ES5 build and deployment
 - spinner when loading
+- color to the court-view
 - same page selection in drawer closes the drawer
 - 60/90/120 min bookigs
-- passwodr reset email
-- toast is behind the menu 
-- implement real time updates
 - statictics
-- color to the court-view
