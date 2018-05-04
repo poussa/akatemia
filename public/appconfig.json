@@ -3,6 +3,8 @@
     "collection": "reservations",
     "courts": 2,
     "first_hour": 7,
+    "timezone": "Europe/Helsinki",
+    "locale": "fi",
     "last_hour": 21,
     "duration": 30,
     "anonymous_reservations": false

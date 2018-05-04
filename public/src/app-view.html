@@ -106,7 +106,7 @@
           let start = this.moment.clone().startOf('day').hour(this.appconfig.first_hour);
           let end = this.moment.clone().startOf('day').hour(this.appconfig.last_hour);            
 
-          let format = 'DD.MM.YY  kk:mm'
+          let format = 'DD.MM.YY  kk:mm (ZZ)'
           console.log("query: %s - %s", start.format(format), end.format(format));
           query = query
                   .orderBy('starttime')
@@ -126,7 +126,7 @@
               this.items.forEach((item, idx) => {
                 if (data.starttime.isSame(item.starttime)) {
                   console.log('match: %s (%o/%o)', 
-                    data.starttime.format("hh:mm"), data.courts[0].booked, data.courts[1].booked);
+                    data.starttime.format(format), data.courts[0].booked, data.courts[1].booked);
                   this.items[idx] = data;
                 }
               })

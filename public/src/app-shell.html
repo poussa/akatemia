@@ -29,6 +29,7 @@
 <link rel="import" href="../bower_components/iron-meta/iron-meta.html">
 
 <script src="../bower_components/moment/moment.js"></script>
+<script src="../bower_components/moment-timezone/moment-timezone.js"></script>
 <script src="../bower_components/moment/locale/fi.js" charset="UTF-8"></script>
 
 <link rel="lazy-import" href="app-view.html">
@@ -199,6 +200,8 @@
 
   <script>
     moment.locale('fi');
+    moment.tz.add("Europe/Helsinki|EET EEST|-20 -30|010|1Vq10 1qM0|12e5");
+    moment.tz.setDefault("Europe/Helsinki");
 
     class AppShell extends Polymer.Element {
       static get is() { return 'app-shell'; }
