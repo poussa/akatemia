@@ -100,6 +100,7 @@
         this._initItems();
         grid.size = this.appconfig.last_hour - this.appconfig.first_hour;
         this.unsubscribe = null;
+        this.toast = document.querySelector("app-shell").shadowRoot.querySelector('#toast');
 
         this.dataProvider = (params, callback) => {
           let query = this.db.collection("reservations");
@@ -242,6 +243,9 @@
       _onActiveItemChanged(e) {
         if (this.user.loggedIn && this.user.connected) {
           this.$.grid.detailsOpenedItems = [e.detail.value];
+        }
+        else if (this.user.loggedIn == false) {
+          this.toast.show("Kirjaudu sisään");
         }
       }
       _canBook(courts) {
