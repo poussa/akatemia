@@ -15,8 +15,11 @@ admin.initializeApp({
 });
 
 var collection = '/members'
+var reservations = "/reservations"
 
 var db = admin.firestore();
+//https://github.com/firebase/firebase-js-sdk/issues/726
+db.settings({ timestampsInSnapshots: true });
 
 const manual = "" +
 "usage:\n" +
@@ -28,6 +31,9 @@ const manual = "" +
 "  --get-user <email> : list a user\n" +
 "  --del-user <uid> : delete an user\n" +
 "  --add-user <email> <lastname> <firstname> : add new user\n" +
+"  --get-reservations [--details] : get all reservations\n" +
+"  --get-reservation <email> : get all reservations for a user\n" +
+"  --get-reservation <day> : get all reservations for a day\n" +
 "\n" +
 "<option> means --option value"
 
@@ -148,6 +154,59 @@ function del_user(uid) {
     });
 }
 
+function get_reservations() {
+    let ref = db.collection(reservations).orderBy("starttime");
+    ref.get().then(snapshot => {
+        console.log("Reservations:", snapshot.size);
+        snapshot.forEach(doc => {
+            let data = doc.data();
+            let str = "";
+            if (data.courts[0].booked) 
+                str += " 1: " + data.courts[0].user;
+            if (data.courts[1].booked) 
+                str += " 2: " + data.courts[1].user;
+            if (nconf.get('details')) {
+                str += " " + doc.id;
+            }
+            if (data.courts[0].booked || data.courts[0].booked)         
+                console.log("%s: ", data.starttime, str);
+        })
+    }).catch(error => {
+        console.log(error.message);
+    })
+}
+
+function get_reservation(email) {
+    // TODO: HERE, this does not work (array of objects...)
+    admin.auth().getUserByEmail(email)
+    .then(function(userRecord) {
+        // See the UserRecord reference doc for the contents of userRecord.
+        console.log(userRecord.uid);
+        let ref = db.collection(reservations).where('courts', 'array-contains', userRecord.uid)
+        ref.get().then(snapshot => {
+            console.log("Found reservations: ", snapshot.size);
+            snapshot.forEach(doc => {
+                let data = doc.data();
+                let str = "";
+                if (data.courts[0].booked) 
+                    str += " 1: " + data.courts[0].user;
+                if (data.courts[1].booked) 
+                    str += " 2: " + data.courts[1].user;
+                if (nconf.get('details')) {
+                    str += " " + doc.id;
+                }
+                if (data.courts[0].booked || data.courts[0].booked)         
+                    console.log("%s: ", data.starttime, str);
+            })
+        }).catch(error => {
+            console.log(error.message);
+        })
+    })
+    .catch(function(error) {
+        console.log(error.message);
+    })
+}
+
 if (nconf.get('get-members')) {
     get_members();
 } else if (nconf.get('del-member')) {
@@ -190,6 +249,14 @@ if (nconf.get('get-members')) {
     console.log(user);
     add_user(user);
     admin.app().delete();
+} else if (nconf.get('get-reservations')) {
+    get_reservations();
+} else if (nconf.get('get-reservation')) {
+    let email = nconf.get('email');
+
+    if (email == undefined)
+        usage();
+    get_reservation(email);
 } else {
     usage();
 }

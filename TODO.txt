@@ -5,3 +5,4 @@
 - same page selection in drawer closes the drawer
 - 60/90/120 min bookigs
 - statictics
+- Check array updates in multiuser case (https://firebase.googleblog.com/2018/08/better-arrays-in-cloud-firestore.html)

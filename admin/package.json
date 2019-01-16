@@ -5,7 +5,7 @@
   "main": "firestore-admin.js",
   "dependencies": {
     "csv-parser": "^1.12.1",
-    "firebase-admin": "^5.10.0",
+    "firebase-admin": "^6.0.0",
     "moment": "^2.20.1",
     "nconf": "^0.10.0"
   },
