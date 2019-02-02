@@ -4,6 +4,9 @@
     "The Polymer Authors"
   ],
   "license": "https://polymer.github.io/LICENSE.txt",
+  "main": [
+    "public/index.html"
+  ],
   "dependencies": {
     "app-layout": "PolymerElements/app-layout#^2.0.0",
     "app-route": "PolymerElements/app-route#^2.0.0",
