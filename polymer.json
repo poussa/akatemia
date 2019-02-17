@@ -1,10 +1,10 @@
 {
   "entrypoint": "public/index.html",
-  "shell": "public/src/app-shell.html",
+  "shell": "public/src/app-shell.js",
   "fragments": [
-    "public/src/app-view.html",
-    "public/src/app-login.html",
-    "public/src/app-view404.html"
+    "public/src/app-view.js",
+    "public/src/app-login.js",
+    "public/src/app-view404.js"
   ],
   "sources": [
     "public/src/**/*",
@@ -13,10 +13,13 @@
   "extraDependencies": [
     "public/manifest.json",
     "public/appconfig.json",
-    "public/bower_components/webcomponentsjs/*.js"
+    "public/node_modules/@webcomponents/webcomponentsjs/*.js",
+    "!public/node_modules/@webcomponents/webcomponentsjs/gulpfile.js",
+    "public/node_modules/@webcomponents/webcomponentsjs/bundles/**"
+
   ],
   "lint": {
-    "rules": ["polymer-2"]
+    "rules": ["polymer-3"]
   },
   "builds": [
     {
@@ -30,5 +33,7 @@
       "preset": "es6-unbundled",
       "basePath": true
     }
-  ]
+  ],
+  "moduleResolution": "node",
+  "npm": true
 }

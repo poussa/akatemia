@@ -72,7 +72,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       * to indicate the path from which you'll be serving, including leading
       * and trailing slashes (e.g., `/my-app/`).
       */
-      window.Polymer = {rootPath: '/'};
+      window.AppGlobals = {rootPath: '/', debug: true, error: true};
+      const log = (AppGlobals.debug == true) ? console.log : () => {};
+      const error = (AppGlobals.error == true) ? console.error : () => {};
 
       // Load and register pre-caching Service Worker
       /* spoussa: disable for now...
@@ -86,15 +88,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       */
       window.addEventListener('WebComponentsReady', function(e) {
         // Create elements here
-        console.log("WebComponentsReady");
+        log("WebComponentsReady");
       });
     </script>
 
     <!-- Load webcomponents-loader.js to check and load any polyfills your browser needs -->
-    <script src="bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+
+    <!-- TODO: use min, is this is right place, ES6? -->
+    <script src="node_modules/moment/min/moment.min.js"></script>
+    <script src="node_modules/moment/locale/fi.js"></script>
+    <script src="node_modules/moment-timezone/builds/moment-timezone.min.js"></script>
+
+    <script src="node_modules/firebase/firebase-app.js"></script>
+    <script src="node_modules/firebase/firebase-auth.js"></script>
+    <script src="node_modules/firebase/firebase-database.js"></script>
+    <script src="node_modules/firebase/firebase-firestore.js"></script>
 
     <!-- Load your application shell -->
-    <link rel="import" href="src/app-shell.html">
+    <script type="module" src="src/app-shell.js"></script>
+
 
     <!-- Add any global styles for body, document, etc. -->
     <style>

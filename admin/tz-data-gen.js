@@ -1,3 +1,4 @@
+#! node
 var moment = require('moment-timezone');
 require('moment-timezone/moment-timezone-utils')
 
