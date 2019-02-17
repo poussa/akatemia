@@ -349,7 +349,7 @@ class AppShell extends PolymerElement {
         import('./app-login.js');
         break;
       case 'view404':
-        import('./my-view404.js');
+        import('./app-view404.js');
         break;
       default:
         console.log("Internal error");
