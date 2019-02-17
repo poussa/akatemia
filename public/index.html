@@ -95,11 +95,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <!-- Load webcomponents-loader.js to check and load any polyfills your browser needs -->
     <script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
 
-    <!-- TODO: use min, is this is right place, ES6? -->
+    <!-- TODO: moment-timezone lack of ES6 support -->
     <script src="node_modules/moment/min/moment.min.js"></script>
     <script src="node_modules/moment/locale/fi.js"></script>
     <script src="node_modules/moment-timezone/builds/moment-timezone.min.js"></script>
 
+    <!-- TODO: firebase lack of ES6 support -->
+    <!--  https://github.com/firebase/firebase-js-sdk/issues/815 -->
     <script src="node_modules/firebase/firebase-app.js"></script>
     <script src="node_modules/firebase/firebase-auth.js"></script>
     <script src="node_modules/firebase/firebase-database.js"></script>
