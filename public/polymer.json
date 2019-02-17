@@ -1,0 +1,39 @@
+{
+  "entrypoint": "index.html",
+  "shell": "src/app-shell.js",
+  "fragments": [
+    "src/app-view.js",
+    "src/app-login.js",
+    "src/app-view404.js"
+  ],
+  "sources": [
+    "src/**/*",
+    "images/**/*"
+  ],
+  "extraDependencies": [
+    "manifest.json",
+    "appconfig.json",
+    "node_modules/@webcomponents/webcomponentsjs/*.js",
+    "!node_modules/@webcomponents/webcomponentsjs/gulpfile.js",
+    "node_modules/@webcomponents/webcomponentsjs/bundles/**"
+
+  ],
+  "lint": {
+    "rules": ["polymer-3"]
+  },
+  "builds": [
+    {
+      "preset": "es5-bundled"
+    },
+    {
+      "preset": "es6-bundled",
+      "basePath": true
+    },
+    {
+      "preset": "es6-unbundled",
+      "basePath": true
+    }
+  ],
+  "moduleResolution": "node",
+  "npm": true
+}
