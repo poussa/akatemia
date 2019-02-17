@@ -1,0 +1,45 @@
+{
+  "name": "akatemia-tennis",
+  "version": "0.0.1",
+  "resolutions": {
+    "inherits": "2.0.3",
+    "samsam": "1.1.3",
+    "supports-color": "3.1.2",
+    "type-detect": "1.0.0"
+  },
+  "main": "index.html",
+  "author": "The Polymer Authors",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "@polymer/app-layout": "^3.0.0",
+    "@polymer/app-route": "^3.0.0",
+    "@polymer/iron-ajax": "^3.0.0",
+    "@polymer/iron-flex-layout": "^3.0.0",
+    "@polymer/iron-icons": "^3.0.0",
+    "@polymer/iron-iconset-svg": "^3.0.0",
+    "@polymer/iron-label": "^3.0.0",
+    "@polymer/iron-media-query": "^3.0.0",
+    "@polymer/iron-pages": "^3.0.0",
+    "@polymer/iron-selector": "^3.0.0",
+    "@polymer/paper-button": "^3.0.0",
+    "@polymer/paper-checkbox": "^3.0.0",
+    "@polymer/paper-icon-button": "^3.0.0",
+    "@polymer/paper-input": "^3.0.0",
+    "@polymer/paper-spinner": "^3.0.0",
+    "@polymer/paper-toast": "^3.0.0",
+    "@polymer/polymer": "^3.0.0",
+    "@vaadin/vaadin-checkbox": "^2.2.6",
+    "@vaadin/vaadin-control-state-mixin": "^2.1.2",
+    "@vaadin/vaadin-date-picker": "^3.3.2",
+    "@vaadin/vaadin-grid": "^5.2.7",
+    "@vaadin/vaadin-text-field": "^2.1.7",
+    "@vaadin/vaadin-themable-mixin": "^1.4.0",
+    "@webcomponents/webcomponentsjs": "^2.0.0",
+    "firebase": "^5.8.2",
+    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.16"
+  },
+  "devDependencies": {
+    "wct-browser-legacy": "^1.0.1"
+  }
+}
