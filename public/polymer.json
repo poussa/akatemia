@@ -14,24 +14,71 @@
     "manifest.json",
     "appconfig.json",
     "node_modules/@webcomponents/webcomponentsjs/*.js",
+    "node_modules/moment/min/moment.min.js",
+    "node_modules/moment/locale/fi.js",
+    "node_modules/moment-timezone/builds/moment-timezone.min.js",
+    "node_modules/firebase/firebase-app.js",
+    "node_modules/firebase/firebase-auth.js",
+    "node_modules/firebase/firebase-database.js",
+    "node_modules/firebase/firebase-firestore.js",
     "!node_modules/@webcomponents/webcomponentsjs/gulpfile.js",
     "node_modules/@webcomponents/webcomponentsjs/bundles/**"
-
   ],
   "lint": {
     "rules": ["polymer-3"]
   },
   "builds": [
     {
-      "preset": "es5-bundled"
+      "name": "esm-bundled",
+      "browserCapabilities": [
+        "es2015",
+        "modules"
+      ],
+      "js": {
+        "minify": true
+      },
+      "css": {
+        "minify": true
+      },
+      "html": {
+        "minify": true
+      },
+      "bundle": true,
+      "addServiceWorker": true
     },
     {
-      "preset": "es6-bundled",
-      "basePath": true
+      "name": "es6-bundled",
+      "browserCapabilities": [
+        "es2015"
+      ],
+      "js": {
+        "minify": true,
+        "transformModulesToAmd": true
+      },
+      "css": {
+        "minify": true
+      },
+      "html": {
+        "minify": true
+      },
+      "bundle": true,
+      "addServiceWorker": true
     },
     {
-      "preset": "es6-unbundled",
-      "basePath": true
+      "name": "es5-bundled",
+      "js": {
+        "minify": true,
+        "compile": true,
+        "transformModulesToAmd": true
+      },
+      "css": {
+        "minify": true
+      },
+      "html": {
+        "minify": true
+      },
+      "bundle": true,
+      "addServiceWorker": true
     }
   ],
   "moduleResolution": "node",
