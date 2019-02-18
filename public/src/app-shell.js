@@ -1,4 +1,5 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { setPassiveTouchGestures, setRootPath } from '@polymer/polymer/lib/utils/settings.js';
 import '@polymer/app-layout/app-drawer/app-drawer.js';
 import '@polymer/app-layout/app-drawer-layout/app-drawer-layout.js';
@@ -17,9 +18,7 @@ import '@polymer/paper-toast/paper-toast.js';
 import '@polymer/iron-ajax/iron-ajax.js';
 import '@polymer/iron-meta/iron-meta.js';
 
-//import '@vaadin/vaadin-date-picker/vaadin-date-picker-light.js';
 import '@vaadin/vaadin-date-picker/theme/material/vaadin-date-picker-light.js';
-
 
 import './app-icons.js';
 
@@ -47,24 +46,6 @@ import('./app-view404.js').then((AppView404) => {
   error("AppView404 failed");
 });
 
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-
-const $_documentContainer = document.createElement('template');
-
-$_documentContainer.innerHTML = `<dom-module id="overlay-styles" theme-for="vaadin-date-picker-overlay">
-  <template>
-    <style include="vaadin-date-picker-overlay-default-theme">
-      [part="overlay-header"] {
-        display: none;
-      }
-      [part="years"] {
-        display: none;
-      }
-    </style>
-  </template>
-</dom-module>`;
-
-document.head.appendChild($_documentContainer.content);
 moment.locale('fi');
 moment.tz.add("Europe/Helsinki|EET EEST|-20 -30|010|1Vq10 1qM0|12e5");
 moment.tz.setDefault("Europe/Helsinki");

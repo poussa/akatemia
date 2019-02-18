@@ -1,13 +1,12 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-spinner/paper-spinner-lite.js';
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-checkbox/paper-checkbox.js';
-import '@polymer/iron-icons/iron-icons.js';
-import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 import '@vaadin/vaadin-grid/theme/material/vaadin-grid.js';
+
+import './shared-styles'
 
 class AppView extends PolymerElement {
   static get template() {
@@ -44,7 +43,6 @@ class AppView extends PolymerElement {
       }
     </style>
 
-    <!--paper-spinner-lite id="spinner" active="[[loading]]"></paper-spinner-lite-->
     <vaadin-grid on-active-item-changed="_onActiveItemChanged" data-provider="[[dataProvider]]" size="[[size]]" id="grid">
       <template class="row-details">
         <div class="details">
