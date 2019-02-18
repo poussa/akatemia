@@ -181,7 +181,7 @@ class AppView extends PolymerElement {
       collection.add(doc).then((docRef) => {
         log("New doc added: ", docRef.id);
         this.$.grid.closeItemDetails(this.$.grid.activeItem);
-        this.$.grid.clearCache();
+        //TODO: when this is needed: this.$.grid.clearCache();
       })
       .catch((err) => {
         error("New doc add error, ", err);
@@ -192,7 +192,7 @@ class AppView extends PolymerElement {
       collection.doc(activeItem.id).update(doc).then(() => {
         log("Doc updated: ", activeItem.id);
         this.$.grid.closeItemDetails(this.$.grid.activeItem);
-        this.$.grid.clearCache();
+        //TODO: when this is needed: this.$.grid.clearCache();
       })
       .catch((err) => {
         error("Doc update failed, ", err);
