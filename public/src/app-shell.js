@@ -14,9 +14,13 @@ import '@polymer/iron-input/iron-input.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/paper-toast/paper-toast.js';
-import '@vaadin/vaadin-date-picker/vaadin-date-picker-light.js';
 import '@polymer/iron-ajax/iron-ajax.js';
 import '@polymer/iron-meta/iron-meta.js';
+
+//import '@vaadin/vaadin-date-picker/vaadin-date-picker-light.js';
+import '@vaadin/vaadin-date-picker/theme/material/vaadin-date-picker-light.js';
+
+
 import './app-icons.js';
 
 // Gesture events like tap and track generated from touch will not be
@@ -44,10 +48,6 @@ import('./app-view404.js').then((AppView404) => {
 });
 
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-//import { importHref } from '@polymer/polymer/lib/utils/import-href.js';
-//import moment from 'moment';
-//import 'moment/locale/fi';
-//console.log(moment);
 
 const $_documentContainer = document.createElement('template');
 
