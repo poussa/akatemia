@@ -30,22 +30,6 @@ setPassiveTouchGestures(true);
 // in `index.html`.
 setRootPath(AppGlobals.rootPath);
 
-import('./app-view.js').then((AppView) => {
-  log("AppView loaded");
-}).catch((reason) => {
-  error("AppView failed");
-});
-import('./app-login.js').then((AppLogin) => {
-  log("AppLogin loaded");
-}).catch((reason) => {
-  error("AppLogin failed");
-});
-import('./app-view404.js').then((AppView404) => {
-  log("AppView404 loaded");
-}).catch((reason) => {
-  error("AppView404 failed");
-});
-
 moment.locale('fi');
 moment.tz.add("Europe/Helsinki|EET EEST|-20 -30|010|1Vq10 1qM0|12e5");
 moment.tz.setDefault("Europe/Helsinki");
@@ -197,6 +181,7 @@ class AppShell extends PolymerElement {
     return {
       page: {
         type: String,
+
         reflectToAttribute: true,
         observer: '_pageChanged',
       },
@@ -232,25 +217,37 @@ class AppShell extends PolymerElement {
     super.ready();
     this.localize();
     this.formatDay();
-    var config = {
-      apiKey: "AIzaSyDHAI9Acoxw8V6UuSWoMDWt3S_Er_rlFyg",
-      authDomain: "akatemia-d4c48.firebaseapp.com",
-      databaseURL: "https://akatemia-d4c48.firebaseio.com",
-      projectId: "akatemia-d4c48",
-      storageBucket: "akatemia-d4c48.appspot.com",
-      messagingSenderId: "41494415118"
+    // Production config
+    var production = {
+      apiKey: "AIzaSyA5fEsZ7-JUiJQ3jFfHqizGkl95lrPi7ZQ",
+      authDomain: "akatemia-tennis.firebaseapp.com",
+      databaseURL: "https://akatemia-tennis.firebaseio.com",
+      projectId: "akatemia-tennis",
+      storageBucket: "akatemia-tennis.appspot.com",
+      messagingSenderId: "794286885542"
     };
-    firebase.initializeApp(config);
+    // Testing config
+    var testing = {
+      apiKey: "AIzaSyBK4PYw2HChcmK9SsznDswvtC5UMrA2jiM",
+      authDomain: "akatemia-testing.firebaseapp.com",
+      databaseURL: "https://akatemia-testing.firebaseio.com",
+      projectId: "akatemia-testing",
+      storageBucket: "akatemia-testing.appspot.com",
+      messagingSenderId: "248923693759"
+    };
+
+    firebase.initializeApp(production);
     firebase.database().ref(".info/connected").on("value", (snap) => {
       if (snap.val() === true) {
-        log("User connected");
+        log("Database connected");
         this.set('user.connected', true);
       } else {
-        log("User not connected");
+        log("Database not connected");
         this.set('user.connected', false);
       }
     });
     firebase.auth().onAuthStateChanged((user) => {
+      log("Auth state changed: ", user);
       if (user) {
         this.set('user.name', user.displayName);
         this.set('user.email', user.email)
@@ -321,19 +318,31 @@ class AppShell extends PolymerElement {
     //
     // Note: `polymer build` doesn't like string concatenation in the import
     // statement, so break it up.
-    console.log('pageChanged: ' + page)
+    log('pageChanged: ' + page)
     switch (page) {
       case 'view':
-        import('./app-view.js');
+        import('./app-view.js').then((element) => {
+          log('Module loaded:', page)
+        }).catch((reason) => {
+          error('Element failed to load: ', reason);
+        });
         break;
       case 'login':
-        import('./app-login.js');
+        import('./app-login.js').then((element) => {
+          log('Module loaded:', page)
+        }).catch((reason) => {
+          error('Element failed to load: ', reason);
+        });
         break;
       case 'view404':
-        import('./app-view404.js');
+        import('./app-view404.js').then((element) => {
+          log('Module loaded:', page)
+        }).catch((reason) => {
+          error('Element failed to load: ', reason);
+        });
         break;
       default:
-        console.log("Internal error");
+        error("No such module", page);
     }
   }
 
