@@ -51,9 +51,11 @@ class AppLogin extends PolymerElement {
   static get is() { return 'app-login'; }
   ready() {
     super.ready();
+    log("login: ready [start]")
     this.btnTextLogin = "Sisään";
     this.btnTextSend = "Lähetä";
     this.toast = document.querySelector("app-shell").shadowRoot.querySelector('#toast');
+    log("login: ready [end]")
   }
 
   _register() {
@@ -76,10 +78,10 @@ class AppLogin extends PolymerElement {
         this.toast.show('Invalid membership.');
         return;            
       }
-      firebase.auth().createUserWithEmailAndPassword(email, password).then((user) => {
-        console.log("New user: " + member.lastName);
+      firebase.auth().createUserWithEmailAndPassword(email, password).then((result) => {
+        log("New user: " + member.lastName);
         let displayName = member.firstName.charAt(0) + '.' + member.lastName
-        user.updateProfile({displayName: displayName}).then(() => {
+        result.user.updateProfile({displayName: displayName}).then(() => {
           // We need to set this here since onAuthStateChanged is already called
           // and does not pick up the displayName property change
           this.set('user.name', displayName);
@@ -87,12 +89,15 @@ class AppLogin extends PolymerElement {
           this.toast.show(message);
         }).catch((err) => {
           this.toast.show(err.message);
+          error(err.message)
         });
       }).catch((err) => {
         this.toast.show(err.message);
+        error(err.message)
       });
     }).catch((err) => {
       this.toast.show(err.message);
+      error(err.message)
     });
   }
 
