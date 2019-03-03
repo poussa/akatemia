@@ -94,6 +94,8 @@ class AppView extends PolymerElement {
 
   ready() {
     super.ready();
+    log("view: ready [start]")
+
     const grid = this.$.grid;
     grid.size = this.appconfig.last_hour - this.appconfig.first_hour;
     this.db = firebase.firestore();
@@ -137,6 +139,7 @@ class AppView extends PolymerElement {
         this.loading = false;
       });
     }
+    log("view: ready [end]")
   }
 
   _reserve(e) {
@@ -242,10 +245,14 @@ class AppView extends PolymerElement {
     });
   }
   _onActiveItemChanged(e) {
+    if (e.detail.value == null) {
+      // This is the init event, don't care at the moment
+      return;
+    }
     if (this.user.loggedIn && this.user.connected) {
       this.$.grid.detailsOpenedItems = [e.detail.value];
     }
-    else if (this.user.loggedIn == false) {
+    else if (this.user.loggedIn == false ) {
       this.toast.show("Kirjaudu sisään");
     }
   }
