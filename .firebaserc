@@ -1,6 +1,7 @@
 {
   "projects": {
     "default": "akatemia-d4c48",
-    "testing": "akatemia-testing"
+    "testing": "akatemia-testing",
+    "production": "akatemia-tennis"
   }
 }
