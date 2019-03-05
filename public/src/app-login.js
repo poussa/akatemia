@@ -16,8 +16,8 @@ class AppLogin extends PolymerElement {
         padding: 10px;
       }
       paper-button {
-        background-color: var(--app-primary-color);
-        color: white;
+        background-color: var(--app-secondary-color);
+        color: black;
         margin-top: 24px;
         margin-left: 0px;
       }

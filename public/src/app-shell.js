@@ -39,8 +39,12 @@ class AppShell extends PolymerElement {
     return html`
     <style include="iron-flex iron-flex-alignment iron-flex-factors">
       :host {
-        --app-primary-color: #4285f4;
-        --app-secondary-color: black;
+        --app-primary-color: #1565c0;
+        --app-primary-color-light: #5e92f3;
+        --app-primary-color-dark: #003c8f;
+        --app-secondary-color: #ffeb3b;
+        --app-secondary-color-light: #ffff72;
+        --app-secondary-color-dark: #c8b900;
 
         height: 100%;
         display: block;
@@ -59,6 +63,10 @@ class AppShell extends PolymerElement {
         --paper-icon-button-ink-color: white;
       }
 
+      app-drawer {
+        --app-drawer-scrim-background: rgba(0, 0, 0, 0.5);
+      }
+
       .drawer-list {
         margin: 0 20px;
       }
@@ -67,7 +75,7 @@ class AppShell extends PolymerElement {
         display: block;
         padding: 0 16px;
         text-decoration: none;
-        color: var(--app-secondary-color);
+        color: black;
         line-height: 40px;
       }
 

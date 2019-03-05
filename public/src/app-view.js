@@ -20,8 +20,8 @@ class AppView extends PolymerElement {
         height: 100%;
       }
       paper-button {
-        background-color: var(--app-primary-color);
-        color: white;
+        background-color: var(--app-secondary-color);
+        color: black;
       }
       paper-button[disabled] {
         background-color: var(--light-theme-disabled-color)
@@ -36,7 +36,9 @@ class AppView extends PolymerElement {
         font-weight: bold;
       }
       paper-checkbox {
-        --paper-checkbox-checked-color: var(--app-primary-color);
+        --paper-checkbox-checked-color: var(--app-secondary-color);
+        --paper-checkbox-checked-ink-color: black;
+        --paper-checkbox-checkmark-color: black;
         @apply(--layout-horizontal);
         @apply(--layout-center);        
         @apply(--layout-center-justified);        
@@ -144,6 +146,11 @@ class AppView extends PolymerElement {
 
   _reserve(e) {
     let activeItem = this.$.grid.activeItem;
+    if (activeItem == null) {
+      // Don't know why this happens sometimes
+      this.toast.show("Tapahtui virhe: yritä uudestaan");
+      return;
+    }
     let row = Number(e.target.id.split('_')[1]);
     // Access element inside generated template code
     let checkBox_0 = this.shadowRoot.querySelector("#cb_" + row + "_1");
@@ -245,14 +252,10 @@ class AppView extends PolymerElement {
     });
   }
   _onActiveItemChanged(e) {
-    if (e.detail.value == null) {
-      // This is the init event, don't care at the moment
-      return;
-    }
     if (this.user.loggedIn && this.user.connected) {
       this.$.grid.detailsOpenedItems = [e.detail.value];
     }
-    else if (this.user.loggedIn == false ) {
+    else if (this.user.loggedIn == false && e.detail.value != null) {
       this.toast.show("Kirjaudu sisään");
     }
   }
