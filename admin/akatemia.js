@@ -1,5 +1,6 @@
 var admin = require('firebase-admin');
-var serviceAccount = require('./akatemia-firebase-adminsdk.json');
+//var serviceAccount = require('./akatemia-tennis-firebase-adminsdk.json');
+var serviceAccount = require('./akatemia-tennis-firebase-adminsdk.json');
 var fs = require('fs');
 var csv = require('csv-parser');
 var path = require('path');
@@ -11,15 +12,13 @@ nconf.argv()
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://akatemia-d4c48.firebaseio.com"
+    databaseURL: "https://akatemia-tennis.firebaseio.com"
 });
 
 var collection = '/members'
 var reservations = "/reservations"
 
 var db = admin.firestore();
-//https://github.com/firebase/firebase-js-sdk/issues/726
-db.settings({ timestampsInSnapshots: true });
 
 const manual = "" +
 "usage:\n" +
@@ -109,13 +108,10 @@ function get_users(nextPageToken) {
         listUsersResult.users.forEach(function(userRecord) {
             console.log(userRecord.toJSON());
         });
-        /* NOTE: this hangs for some reason.
-           NOTE2: We don't have this may users anyway...
         if (listUsersResult.pageToken) {
-          // List next batch of users.
+            // List next batch of users.
             get_users(listUsersResult.pageToken)
         }
-        */
     })
     .catch(function(error) {
         console.log(error.message);
@@ -223,7 +219,7 @@ if (nconf.get('get-members')) {
     add_members(file);
 } else if (nconf.get('get-users')) {
     get_users();
-    admin.app().delete();
+    //admin.app().delete();
 } else if (nconf.get('get-user')) {
     let email = nconf.get('email');
     if (email == undefined)
