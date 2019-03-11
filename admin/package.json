@@ -1,11 +1,11 @@
 {
-  "name": "firebase-admin",
+  "name": "akatemia-tools",
   "version": "0.0.1",
   "description": "Admin tool (CLI)",
-  "main": "firestore-admin.js",
+  "main": "akatemia.js",
   "dependencies": {
     "csv-parser": "^1.12.1",
-    "firebase-admin": "^6.0.0",
+    "firebase-admin": "^7.0.0",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.23",
     "nconf": "^0.10.0"
