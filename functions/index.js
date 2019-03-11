@@ -1,18 +1,20 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-admin.initializeApp(functions.config().firebase);
+admin.initializeApp();
 const firestore = admin.firestore();
 
-exports.newReservation = functions.firestore
+exports.newReservation = functions.region('europe-west1').firestore
   .document('reservations/{reservationID}')
-  .onCreate(event => {
-    var data = event.data.data();
+  .onCreate((snap, context) => {
+    var data = snap.data();
     console.log(data);
     return {};
   });
 
-exports.newAccount = functions.auth.user().onCreate(event => {
-  const user = event.data;
+exports.newAccount = functions.region('europe-west1').auth
+  .user()
+  .onCreate((userRecord, context) => {
+  const user = userRecord.metadata;
   console.log(user);
   return {};
 });
