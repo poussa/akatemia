@@ -125,10 +125,7 @@ class AppShell extends PolymerElement {
         @apply --layout-flex;
       }
     </style>
-        
-    <iron-ajax auto="" url="appconfig.json" handle-as="json" last-response="{{appconfig}}"></iron-ajax>
-    <iron-meta id="appconfig" key="config" value\$="{{appconfig}}"></iron-meta>
-        
+
     <app-location route="{{route}}" url-space-regex="^[[rootPath]]">
     </app-location>
 
@@ -174,7 +171,7 @@ class AppShell extends PolymerElement {
 
         <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="view404" role="main">
           <app-login name="login" user="{{user}}"></app-login>
-          <app-view name="view" user="[[user]]" timestamp="[[timestamp]]" appconfig="[[appconfig]]"></app-view>
+          <app-view name="view" user="[[user]]" timestamp="[[timestamp]]"></app-view>
           <app-view404 name="view404"></app-view404>
         </iron-pages>
       </app-header-layout>
@@ -199,7 +196,6 @@ class AppShell extends PolymerElement {
       // Polymer.Element#rootPath
       rootPath: String,
       
-      appconfig: Object,
       moment: {
         type: Object,
         value: moment().startOf('day'),

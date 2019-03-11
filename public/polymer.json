@@ -12,7 +12,6 @@
   ],
   "extraDependencies": [
     "manifest.json",
-    "appconfig.json",
     "node_modules/@webcomponents/webcomponentsjs/*.js",
     "node_modules/moment/min/moment.min.js",
     "node_modules/moment/locale/fi.js",
@@ -62,7 +61,7 @@
         "minify": true
       },
       "bundle": true,
-      "addServiceWorker": true
+      "addServiceWorker": false
     },
     {
       "name": "es5-bundled",
@@ -78,7 +77,7 @@
         "minify": true
       },
       "bundle": true,
-      "addServiceWorker": true
+      "addServiceWorker": false
     }
   ],
   "moduleResolution": "node",

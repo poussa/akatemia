@@ -76,7 +76,6 @@ class AppView extends PolymerElement {
         type: Number,
         observer: "_timestampChanged"
       },
-      appconfig: Object,
       items: {
         type: Array,
         value: []
@@ -97,17 +96,23 @@ class AppView extends PolymerElement {
   ready() {
     super.ready();
     log("view: ready [start]")
-
+    this.config = {
+      "courts": 2,
+      "first_hour": 7,
+      "last_hour": 21,
+      "duration": 30,
+      "anonymous_reservations": false
+    };
     const grid = this.$.grid;
-    grid.size = this.appconfig.last_hour - this.appconfig.first_hour;
+    grid.size = this.config.last_hour - this.config.first_hour;
     this.db = firebase.firestore();
 
     this._initItems();
 
     this.dataProvider = (params, callback) => {
       let query = this.db.collection("reservations");
-      let start = this.moment.clone().startOf('day').hour(this.appconfig.first_hour);
-      let end = this.moment.clone().startOf('day').hour(this.appconfig.last_hour);            
+      let start = this.moment.clone().startOf('day').hour(this.config.first_hour);
+      let end = this.moment.clone().startOf('day').hour(this.config.last_hour);
 
       let format = 'DD.MM.YY  kk:mm (ZZ)'
       log("Query: %s - %s", start.format(format), end.format(format));
@@ -218,9 +223,9 @@ class AppView extends PolymerElement {
     }
   }
   _initItems() {
-    let first_hour = moment().startOf('day').hour(this.appconfig.first_hour);
-    let last_hour = moment().startOf('day').hour(this.appconfig.last_hour);
-    let duration = this.appconfig.duration;
+    let first_hour = moment().startOf('day').hour(this.config.first_hour);
+    let last_hour = moment().startOf('day').hour(this.config.last_hour);
+    let duration = this.config.duration;
 
     for (let hour = first_hour; hour.isBefore(last_hour); hour.add(duration, 'minutes')) {
       let row = {
@@ -228,7 +233,7 @@ class AppView extends PolymerElement {
         endtime: hour.clone().add(duration, 'minutes')
       }
       row.courts = [];
-      for (let court = 0; court < this.appconfig.courts; court++) {
+      for (let court = 0; court < this.config.courts; court++) {
         row.courts[court] = {court: court + 1, booked: false}
       }
       this.items.push(row);
