@@ -215,32 +215,42 @@ class AppShell extends PolymerElement {
 
   constructor() {
     super();
-    this.user = {name: '...', email: '', uid: '', loggedIn: false, connected: false, requestPassword: false}
+    this.user = {
+      name: '...',
+      email: '',
+      uid: null,
+      loggedIn: false,
+      connected: false,
+      requestPassword: false}
   }
   ready() {
     super.ready();
     this.localize();
     this.formatDay();
-    // Production config
-    var production = {
-      apiKey: "AIzaSyA5fEsZ7-JUiJQ3jFfHqizGkl95lrPi7ZQ",
-      authDomain: "akatemia-tennis.firebaseapp.com",
-      databaseURL: "https://akatemia-tennis.firebaseio.com",
-      projectId: "akatemia-tennis",
-      storageBucket: "akatemia-tennis.appspot.com",
-      messagingSenderId: "794286885542"
-    };
-    // Testing config
-    var testing = {
-      apiKey: "AIzaSyBK4PYw2HChcmK9SsznDswvtC5UMrA2jiM",
-      authDomain: "akatemia-testing.firebaseapp.com",
-      databaseURL: "https://akatemia-testing.firebaseio.com",
-      projectId: "akatemia-testing",
-      storageBucket: "akatemia-testing.appspot.com",
-      messagingSenderId: "248923693759"
-    };
+    var PRODUCTION = true;
+    var config = {}
 
-    firebase.initializeApp(production);
+    if (PRODUCTION == true)
+      config = {
+        apiKey: "AIzaSyA5fEsZ7-JUiJQ3jFfHqizGkl95lrPi7ZQ",
+        authDomain: "akatemia-tennis.firebaseapp.com",
+        databaseURL: "https://akatemia-tennis.firebaseio.com",
+        projectId: "akatemia-tennis",
+        storageBucket: "akatemia-tennis.appspot.com",
+        messagingSenderId: "794286885542"
+      };
+    else {
+      config = {
+        apiKey: "AIzaSyBK4PYw2HChcmK9SsznDswvtC5UMrA2jiM",
+        authDomain: "akatemia-testing.firebaseapp.com",
+        databaseURL: "https://akatemia-testing.firebaseio.com",
+        projectId: "akatemia-testing",
+        storageBucket: "akatemia-testing.appspot.com",
+        messagingSenderId: "248923693759"
+      };
+    }
+    log("SITE:", config.databaseURL)
+    firebase.initializeApp(config);
     firebase.database().ref(".info/connected").on("value", (snap) => {
       if (snap.val() === true) {
         log("Database connected");
@@ -251,7 +261,7 @@ class AppShell extends PolymerElement {
       }
     });
     firebase.auth().onAuthStateChanged((user) => {
-      log("Auth state changed: ", user);
+      log("Auth state changed: ", user != null ? user.displayName + " login" : "logout");
       if (user) {
         this.set('user.name', user.displayName);
         this.set('user.email', user.email)
@@ -262,7 +272,7 @@ class AppShell extends PolymerElement {
       else {
         this.set('user.name', '');
         this.set('user.email', '')
-        this.set('user.uid', '');
+        this.set('user.uid', null);
         this.set('user.loggedIn', false);
       }
     });
