@@ -1,10 +1,11 @@
 var admin = require('firebase-admin');
-//var serviceAccount = require('./akatemia-tennis-firebase-adminsdk.json');
 var serviceAccount = require('./akatemia-tennis-firebase-adminsdk.json');
+//var serviceAccount = require('./akatemia-testing-firebase-adminsdk.json');
 var fs = require('fs');
 var csv = require('csv-parser');
 var path = require('path');
 var nconf = require('nconf');
+var moment = require('moment')
 
 nconf.argv()
    .env()
@@ -22,14 +23,15 @@ var db = admin.firestore();
 
 const manual = "" +
 "usage:\n" +
-"  --get-members : list all members\n" +
+"  --get-members [<email>]: list all members\n" +
 "  --del-member <email> : delete a member\n" +
 "  --add-member <email> <lastname> <firstname> : add new member\n" +
 "  --add-members <file> : add/update members from csv file\n" +
 "  --get-users : list all users\n" +
 "  --get-user <email> : list a user\n" +
 "  --del-user <uid> : delete an user\n" +
-"  --add-user <email> <lastname> <firstname> : add new user\n" +
+"  --add-user <email> <password> <displayname> : add new user\n" +
+"  --update-user <uid> <displayname> : update user\n" +
 "  --get-reservations [--details] : get all reservations\n" +
 "  --get-reservation <email> : get all reservations for a user\n" +
 "  --get-reservation <day> : get all reservations for a day\n" +
@@ -41,8 +43,10 @@ function usage() {
     process.exit(1);
 }
 
-function get_members() {
+function get_members(email) {
     let ref = db.collection(collection);
+    if (email != null)
+        ref = ref.where('email', '==', email);
     ref.get().then(snapshot => {
         console.log("Found users: ", snapshot.size);
         snapshot.forEach(doc => {
@@ -102,19 +106,17 @@ function add_members(file) {
 }
 
 function get_users(nextPageToken) {
-    // List batch of users, 1000 at a time.
-    admin.auth().listUsers(1000, nextPageToken)
+    admin.auth().listUsers(1000)
     .then(function(listUsersResult) {
         listUsersResult.users.forEach(function(userRecord) {
             console.log(userRecord.toJSON());
         });
-        if (listUsersResult.pageToken) {
-            // List next batch of users.
-            get_users(listUsersResult.pageToken)
-        }
     })
     .catch(function(error) {
         console.log(error.message);
+    })
+    .finally(function() {
+        admin.app().delete();
     });
 }
 
@@ -127,6 +129,9 @@ function get_user(email) {
     .catch(function(error) {
         console.log(error.message);
     })
+    .finally(function() {
+        admin.app().delete();
+    });
 }
 
 function add_user(user) {
@@ -137,6 +142,24 @@ function add_user(user) {
     })
     .catch(function(error) {
         console.log(error.message);
+    })
+    .finally(function() {
+        admin.app().delete();
+    });
+}
+
+function update_user(uid, displayName) {
+    admin.auth().updateUser(uid, {
+        displayName: displayName,
+      })
+    .then(function(userRecord) {
+        console.log("Successfully updated user", userRecord.toJSON());
+    })
+    .catch(function(error) {
+        console.log("Error updating user:", error);
+    })
+    .finally(function() {
+        admin.app().delete();
     });
 }
 
@@ -147,6 +170,9 @@ function del_user(uid) {
     })
     .catch(function(error) {
       console.log(error.message);
+    })
+    .finally(function() {
+        admin.app().delete();
     });
 }
 
@@ -156,16 +182,19 @@ function get_reservations() {
         console.log("Reservations:", snapshot.size);
         snapshot.forEach(doc => {
             let data = doc.data();
-            let str = "";
-            if (data.courts[0].booked) 
-                str += " 1: " + data.courts[0].user;
-            if (data.courts[1].booked) 
-                str += " 2: " + data.courts[1].user;
             if (nconf.get('details')) {
-                str += " " + doc.id;
+                console.log(data);
             }
-            if (data.courts[0].booked || data.courts[0].booked)         
-                console.log("%s: ", data.starttime, str);
+            let str1 = "";
+            let str2 = "";
+            if (data.courts[0].booked) 
+                str1 = data.courts[0].user;
+            if (data.courts[1].booked) 
+                str2 = data.courts[1].user;
+            if (data.courts[0].booked || data.courts[1].booked) {
+                var starttime = moment.unix(data.starttime._seconds);
+                console.log("%s,%s,%s", starttime.format('DD-MM-YY,HH:mm'), str1, str2);
+            }
         })
     }).catch(error => {
         console.log(error.message);
@@ -180,7 +209,7 @@ function get_reservation(email) {
         console.log(userRecord.uid);
         let ref = db.collection(reservations).where('courts', 'array-contains', userRecord.uid)
         ref.get().then(snapshot => {
-            console.log("Found reservations: ", snapshot.size);
+            console.log("Reservations: ", snapshot.size);
             snapshot.forEach(doc => {
                 let data = doc.data();
                 let str = "";
@@ -204,7 +233,8 @@ function get_reservation(email) {
 }
 
 if (nconf.get('get-members')) {
-    get_members();
+    let email = nconf.get('email');
+    get_members(email);
 } else if (nconf.get('del-member')) {
     let email = nconf.get('email');
     del_member(email);
@@ -219,20 +249,24 @@ if (nconf.get('get-members')) {
     add_members(file);
 } else if (nconf.get('get-users')) {
     get_users();
-    //admin.app().delete();
 } else if (nconf.get('get-user')) {
     let email = nconf.get('email');
     if (email == undefined)
         usage();
     get_user(email);
-    admin.app().delete();
 } else if (nconf.get('del-user')) {
     let uid = nconf.get('uid');
     if (uid == undefined)
         usage();
     
     del_user(uid);
-    admin.app().delete();
+} else if (nconf.get('update-user')) {
+    let uid = nconf.get('uid');
+    let displayName = nconf.get('displayname');
+    if (uid == undefined || displayName == undefined)
+        usage();
+
+    update_user(uid, displayName);
 } else if (nconf.get('add-user')) {
     let email = nconf.get('email');
     let password = nconf.get('password');
@@ -244,7 +278,6 @@ if (nconf.get('get-members')) {
     let user = {email: email, password: password, displayName: displayname, disabled: false}
     console.log(user);
     add_user(user);
-    admin.app().delete();
 } else if (nconf.get('get-reservations')) {
     get_reservations();
 } else if (nconf.get('get-reservation')) {
@@ -256,5 +289,3 @@ if (nconf.get('get-members')) {
 } else {
     usage();
 }
-
-//process.exit(0);
