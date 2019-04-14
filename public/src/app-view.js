@@ -37,7 +37,6 @@ class AppView extends PolymerElement {
       }
       paper-checkbox {
         --paper-checkbox-checked-color: var(--app-secondary-color);
-        --paper-checkbox-checked-ink-color: black;
         --paper-checkbox-checkmark-color: black;
         @apply(--layout-horizontal);
         @apply(--layout-center);        

@@ -26,7 +26,8 @@ class AppLogin extends PolymerElement {
       }
       paper-checkbox {
         margin-top: 24px;
-        --paper-checkbox-checked-color: var(--app-primary-color);
+        --paper-checkbox-checked-color: var(--app-secondary-color);
+        --paper-checkbox-checkmark-color: black;
       }
     </style>
   
