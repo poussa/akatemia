@@ -153,7 +153,7 @@ class AppShell extends PolymerElement {
             <div class="container">
               <paper-icon-button icon="app-icons:menu" drawer-toggle=""></paper-icon-button>
               <div id="div-menu-picker">
-                <vaadin-date-picker-light on-value-changed="_dateChanged" min="2018-01-01" max="2019-12-31" id="datePicker">
+                <vaadin-date-picker-light on-value-changed="_dateChanged" min="2018-01-01" max="2020-12-31" id="datePicker">
                   <div>
                     <iron-input>
                       <input size="10">
@@ -227,7 +227,7 @@ class AppShell extends PolymerElement {
     super.ready();
     this.localize();
     this.formatDay();
-    var PRODUCTION = true;
+    var PRODUCTION = false;
     var config = {}
 
     if (PRODUCTION == true)
