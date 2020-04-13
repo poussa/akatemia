@@ -1,4 +1,5 @@
-#! node
+#!/usr/bin/env node
+
 var moment = require('moment-timezone');
 require('moment-timezone/moment-timezone-utils')
 
@@ -8,7 +9,7 @@ var zones = [];
 let zone = moment.tz.zone(tz_name)
 
 // For tz.add(...)
-var subset = moment.tz.filterYears(zone, 2018);
+var subset = moment.tz.filterYears(zone, 2020);
 console.log("\"" + moment.tz.pack(subset) + "\"")
 
 // For tz.load(...)
@@ -18,5 +19,5 @@ input.version = "2018"
 input.zones = zones;
 input.links = [];
 
-let pack = moment.tz.filterLinkPack(input, 2018, 2018)
+let pack = moment.tz.filterLinkPack(input, 2018, 2020)
 console.log(JSON.stringify(pack));

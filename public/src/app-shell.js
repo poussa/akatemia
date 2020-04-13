@@ -31,7 +31,7 @@ setPassiveTouchGestures(true);
 setRootPath(AppGlobals.rootPath);
 
 moment.locale('fi');
-moment.tz.add("Europe/Helsinki|EET EEST|-20 -30|010|1Vq10 1qM0|12e5");
+moment.tz.add("Europe/Helsinki|EET EEST|-20 -30|010|22k10 1o00|12e5");
 moment.tz.setDefault("Europe/Helsinki");
 
 class AppShell extends PolymerElement {
