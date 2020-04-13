@@ -227,7 +227,7 @@ class AppShell extends PolymerElement {
     super.ready();
     this.localize();
     this.formatDay();
-    var PRODUCTION = false;
+    var PRODUCTION = true;
     var config = {}
 
     if (PRODUCTION == true)
