@@ -5,7 +5,7 @@
   "main": "akatemia.js",
   "dependencies": {
     "csv-parser": "^1.12.1",
-    "firebase-admin": "^7.0.0",
+    "firebase-admin": "^8.10.0",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.23",
     "nconf": "^0.10.0"
