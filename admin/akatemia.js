@@ -1,6 +1,17 @@
+#!/usr/bin/env node
+
 var admin = require('firebase-admin');
-var serviceAccount = require('./akatemia-tennis-firebase-adminsdk.json');
-//var serviceAccount = require('./akatemia-testing-firebase-adminsdk.json');
+if (typeof process.env.TARGET_ENV == "undefined")
+  process.env.TARGET_ENV = 'production'
+
+if (process.env.TARGET_ENV == 'production')
+  var serviceAccount = require('./akatemia-tennis-firebase-adminsdk.json');
+else if (process.env.TARGET_ENV == 'testing')
+    var serviceAccount = require('./akatemia-testing-firebase-adminsdk.json');
+else {
+    console.log('Unknown environment: ' + process.env.TARGET_ENV);
+    process.exit(1);
+}
 var fs = require('fs');
 var csv = require('csv-parser');
 var path = require('path');
@@ -36,7 +47,9 @@ const manual = "" +
 "  --get-reservation <email> : get all reservations for a user\n" +
 "  --get-reservation <day> : get all reservations for a day\n" +
 "\n" +
-"<option> means --option value"
+"<option> means --option value\n" +
+"env: " + process.env.TARGET_ENV
+
 
 function usage() {
     console.log(manual);
@@ -237,11 +250,15 @@ if (nconf.get('get-members')) {
     get_members(email);
 } else if (nconf.get('del-member')) {
     let email = nconf.get('email');
+    if (email == undefined)
+        usage();
     del_member(email);
 } else if (nconf.get('add-member')) {
     let email = nconf.get('email');
     let lastname = nconf.get('lastname');
     let firstname = nconf.get('firstname');
+    if (email == undefined || lastname == undefined || firstname == undefined)
+      usage();
     let member = {firstName: firstname, lastName: lastname, email: email, valid: true}
     add_member(member);
 } else if (nconf.get('add-members')) {
